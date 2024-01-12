@@ -3,11 +3,9 @@
 # Author: Kristen Wilson, NC State Libraries
 
 import os.path
-import pathlib
-from pathlib import Path
-import csv
 import sys
 import argparse
+import csv
 
 # Identify the file to be read via a command line argument
 parser = argparse.ArgumentParser(description='Input citation from a .csv file and create interlibrary loan transactions in ILLiad for each citation.')
@@ -23,5 +21,4 @@ if not os.path.isfile(filename):
     sys.exit()
 else:
     print("Reading file " + args.filename + "...")
-
-
+    
