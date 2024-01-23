@@ -1,5 +1,6 @@
-# Path: bulk_ill_alpha.py
-# Purpose: Input citation from a .csv file and create interlibrary loan transactions in ILLiad for each citation.
+#!/usr/bin/env python3
+# bulk_ill.py
+# Purpose: Input citations from a .csv file and create interlibrary loan transactions in ILLiad for each citation.
 # Author: Kristen Wilson, NC State Libraries
 
 import os.path
