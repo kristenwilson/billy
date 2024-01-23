@@ -4,7 +4,7 @@ A Python script that creates interlibrary loan (ILL) transactions from a file of
 ## Prerequisites
 You must have Python3 installed.
 ## Usage
-`python3 bulk_ill_alpha.py email filename`
+`python3 bulk_ill.py email filename`
 
 `email` must be a valid email address associated with an active ILLiad account.
 
