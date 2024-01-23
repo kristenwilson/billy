@@ -1,4 +1,4 @@
-# Bulk ILL Prototype
+# Bulk ILL Script
 ## Description
 A Python script that creates interlibrary loan (ILL) transactions from a file of citation data.
 ## Prerequisites
