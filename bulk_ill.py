@@ -8,6 +8,7 @@ import sys
 import argparse
 import csv
 import requests
+import rispy
 from config import api_key, api_base
 
 def get_args():
@@ -50,21 +51,31 @@ def check_user(email):
         print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
         sys.exit()
 
-def create_transaction(email, filename, filepath):   
+def submit_transaction(transaction):
+    # Create a transaction in ILLiad for each row in the file.
+    api_url = api_base + '/Transaction/'
+    headers = {'ContentType': 'application/json', 'ApiKey': api_key}
 
-    # Open the file as a CSV reader object.
+    response = requests.post(api_url, headers=headers, json=transaction)
+    if response.status_code == 200:
+        print(str(response.json()['TransactionNumber']))
+
+    else:
+        print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
+
+def create_transaction_csv(email, filename, filepath):
+
+     # Open the file as a CSV reader object.
     print('Reading file ' + filename + '...\n')
     
     with open(filepath, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
 
-        # Create a transaction in ILLiad for each row in the file.
-        api_url = api_base + '/Transaction/'
-        headers = {'ContentType': 'application/json', 'ApiKey': api_key}
-
         print('Creating transactions...\n')
 
-        for row in reader:
+        # Create and submit a transaction for each row in the reader object.
+        for row in reader:   
+
             transaction = {
                 'ExternalUserId': email,
                 'RequestType': 'Article',
@@ -74,25 +85,21 @@ def create_transaction(email, filename, filepath):
                 'PhotoArticleAuthor': row['Author'],
                 'PhotoJournalVolume': row['Volume'],
                 'PhotoJournalIssue': row['Issue'],
-                'PhotoJournalYear': row['Year'],
+                'PhotoJournalYear': row['Year'],    
                 'PhotoJournalInclusivePages': row['Pages'],
                 'DOI': row['DOI'],
             }
-
-            response = requests.post(api_url, headers=headers, json=transaction)
-            if response.status_code == 200:
-                print(str(response.json()['TransactionNumber']))
-
-            else:
-                print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
+            submit_transaction(transaction)
 
     print('\nProcessing complete.')
+        
+#TODO: def create_transaction_ris(email, filename, filepath):
 
 def main():
     email, filename = get_args()
     filepath = check_file(filename)
     check_user(email)
-    create_transaction(email, filename, filepath)
+    create_transaction_csv(email, filename, filepath)
 
 if __name__ == '__main__':
     main()
