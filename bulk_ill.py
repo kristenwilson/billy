@@ -15,9 +15,13 @@ def get_args():
     
     # Identify required inputs via command line arguments
     parser = argparse.ArgumentParser(description='Create interlibrary loan transactions in ILLiad for articles in a csv file.')
-    parser.add_argument('email', help='The email address of the person who will receive the requested materials. This person must already have a user account in ILLiad.')
-    parser.add_argument('filename', help='The name of the file to be read. Must be a .csv file.')
-    parser.add_argument('-p', '--pickup', help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.')
+    parser.add_argument('email', 
+                        help='The email address of the person who will receive the requested materials. This person must already have a user account in ILLiad.')
+    parser.add_argument('filename', 
+                        help='The name of the file to be read. Must be a .csv file.')
+    parser.add_argument('-p', '--pickup', 
+                        help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.',
+                        choices=['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension'])
     args = parser.parse_args()
     
     # Assign command line arguments to variables
