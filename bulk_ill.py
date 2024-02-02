@@ -7,9 +7,9 @@ import os.path
 import sys
 import argparse
 import csv
-import requests
-import rispy
 from config import api_key, api_base
+from transaction_templates import get_transaction_templates
+from api_functions import check_user, submit_transaction
 
 def get_args():
     
@@ -47,36 +47,11 @@ def check_file(filename):
     else:
         return filepath
 
-def check_user(email):
-
-    # Check that the email address is associated with a valid user account in ILLiad.
-    api_url = api_base + '/Users/ExternalUserID/' + email
-    headers = {'ContentType': 'application/json', 'ApiKey': api_key}
-
-    response = requests.get(api_url, headers=headers)
-    if response.status_code == 200:
-        print('\nUser ' + email + ' confirmed.\n')
-    
-    else:
-        print(str(response.status_code) + '\n: ' + response.json()['Message'] + '\n')
-        sys.exit()
-
-def submit_transaction(transaction):
-    
-    # Submit transaction data to the ILLiad API.
-    api_url = api_base + '/Transaction/'
-    headers = {'ContentType': 'application/json', 'ApiKey': api_key}
-
-    response = requests.post(api_url, headers=headers, json=transaction)
-    if response.status_code == 200:
-        print(str(response.json()['TransactionNumber']))
-
-    else:
-        print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
-
 def process_transaction_csv(email, filename, filepath, pickup):
 
-     # Open the file as a CSV reader object.
+    transaction_templates = get_transaction_templates(email, pickup)
+    
+    # Open the file as a CSV reader object.
     print('Reading file ' + filename + '...\n')
     
     with open(filepath, 'r') as csvfile:
@@ -85,53 +60,27 @@ def process_transaction_csv(email, filename, filepath, pickup):
         print('Creating transactions...\n')
 
         # Create and submit a transaction for each row in the reader object.
-        for row in reader:
+        for i, row in enumerate(reader, start=1):
 
-            # Define transaction fields for article requests.
-            if str.lower(row['Type']) == ('article'):
-                transaction = {
-                    'ExternalUserId': email,
-                    'RequestType': 'Article',
-                    'ProcessType': 'Borrowing',
-                    'PhotoJournalTitle': row['Journal title'],
-                    'PhotoArticleTitle': row['Title'],
-                    'PhotoArticleAuthor': row['Author'],
-                    'PhotoJournalVolume': row['Volume'],
-                    'PhotoJournalIssue': row['Issue'],
-                    'PhotoJournalYear': row['Year'],    
-                    'PhotoJournalInclusivePages': row['Pages'],
-                    'DOI': row['DOI'],
-                }
+            transaction_type = str.lower(row['Type'])
 
-                submit_transaction(transaction)
+            # If the Type column contains a valid value, create a transaction using the appropriate template.
+            # If the CSV file contains a value for a column, use that value. If not, use the default value from the template.
+            if transaction_type in transaction_templates:
+                transaction = {k: row[v] if v in row else v for k, v in transaction_templates[transaction_type].items()}
+                submit_transaction(transaction, api_base, api_key)
 
-            # Define transaction fields for book requests.
-            elif str.lower(row['Type']) == ('book'):
-                transaction = {
-                    'ExternalUserId': email,
-                    'ItemInfo4': pickup,
-                    'RequestType': 'Loan',
-                    'ProcessType': 'Borrowing',
-                    'LoanTitle': row['Title'],
-                    'LoanAuthor': row['Author'],
-                    'LoanDate': row['Date'],
-                }
-
-                submit_transaction(transaction)
-
-            # If the Type column contains an invalid value, print an error message and exit the script.
+            # If the Type column contains an invalid value, print an error message and move to the next row.
             else:
-                print('Error: The Type column must contain either "article" or "book".\n')
-                sys.exit()
+                print(f'Error on line {i}: The Type column must contain either "article" or "book".')
+                continue
 
     print('\nProcessing complete.')
         
-#TODO: def create_transaction_ris(email, filename, filepath):
-
 def main():
     email, filename, pickup = get_args()
     filepath = check_file(filename)
-    check_user(email)
+    check_user(email, api_base, api_key)
     process_transaction_csv(email, filename, filepath, pickup)
 
 if __name__ == '__main__':
