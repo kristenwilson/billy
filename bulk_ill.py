@@ -17,12 +17,18 @@ def get_args():
     parser = argparse.ArgumentParser(description='Create interlibrary loan transactions in ILLiad for articles in a csv file.')
     parser.add_argument('email', help='The email address of the person who will receive the requested materials. This person must already have a user account in ILLiad.')
     parser.add_argument('filename', help='The name of the file to be read. Must be a .csv file.')
+    parser.add_argument('-p', '--pickup', help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.')
     args = parser.parse_args()
     
     # Assign command line arguments to variables
     filename = args.filename
     email = args.email
-    return email, filename
+    if args.pickup:
+        pickup = args.pickup
+    else:
+        pickup = ''
+    
+    return email, filename, pickup
 
 def check_file(filename):
 
@@ -45,14 +51,15 @@ def check_user(email):
 
     response = requests.get(api_url, headers=headers)
     if response.status_code == 200:
-        print('User ' + email + ' confirmed.\n')
+        print('\nUser ' + email + ' confirmed.\n')
     
     else:
-        print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
+        print(str(response.status_code) + '\n: ' + response.json()['Message'] + '\n')
         sys.exit()
 
 def submit_transaction(transaction):
-    # Create a transaction in ILLiad for each row in the file.
+    
+    # Submit transaction data to the ILLiad API.
     api_url = api_base + '/Transaction/'
     headers = {'ContentType': 'application/json', 'ApiKey': api_key}
 
@@ -63,7 +70,7 @@ def submit_transaction(transaction):
     else:
         print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
 
-def create_transaction_csv(email, filename, filepath):
+def process_transaction_csv(email, filename, filepath, pickup):
 
      # Open the file as a CSV reader object.
     print('Reading file ' + filename + '...\n')
@@ -74,32 +81,54 @@ def create_transaction_csv(email, filename, filepath):
         print('Creating transactions...\n')
 
         # Create and submit a transaction for each row in the reader object.
-        for row in reader:   
+        for row in reader:
 
-            transaction = {
-                'ExternalUserId': email,
-                'RequestType': 'Article',
-                'ProcessType': 'Borrowing',
-                'PhotoJournalTitle': row['Journal title'],
-                'PhotoArticleTitle': row['Title'],
-                'PhotoArticleAuthor': row['Author'],
-                'PhotoJournalVolume': row['Volume'],
-                'PhotoJournalIssue': row['Issue'],
-                'PhotoJournalYear': row['Year'],    
-                'PhotoJournalInclusivePages': row['Pages'],
-                'DOI': row['DOI'],
-            }
-            submit_transaction(transaction)
+            # Define transaction fields for article requests.
+            if str.lower(row['Type']) == ('article'):
+                transaction = {
+                    'ExternalUserId': email,
+                    'RequestType': 'Article',
+                    'ProcessType': 'Borrowing',
+                    'PhotoJournalTitle': row['Journal title'],
+                    'PhotoArticleTitle': row['Title'],
+                    'PhotoArticleAuthor': row['Author'],
+                    'PhotoJournalVolume': row['Volume'],
+                    'PhotoJournalIssue': row['Issue'],
+                    'PhotoJournalYear': row['Year'],    
+                    'PhotoJournalInclusivePages': row['Pages'],
+                    'DOI': row['DOI'],
+                }
+
+                submit_transaction(transaction)
+
+            # Define transaction fields for book requests.
+            elif str.lower(row['Type']) == ('book'):
+                transaction = {
+                    'ExternalUserId': email,
+                    'ItemInfo4': pickup,
+                    'RequestType': 'Loan',
+                    'ProcessType': 'Borrowing',
+                    'LoanTitle': row['Title'],
+                    'LoanAuthor': row['Author'],
+                    'LoanDate': row['Date'],
+                }
+
+                submit_transaction(transaction)
+
+            # If the Type column contains an invalid value, print an error message and exit the script.
+            else:
+                print('Error: The Type column must contain either "article" or "book".\n')
+                sys.exit()
 
     print('\nProcessing complete.')
         
 #TODO: def create_transaction_ris(email, filename, filepath):
 
 def main():
-    email, filename = get_args()
+    email, filename, pickup = get_args()
     filepath = check_file(filename)
     check_user(email)
-    create_transaction_csv(email, filename, filepath)
+    process_transaction_csv(email, filename, filepath, pickup)
 
 if __name__ == '__main__':
     main()
