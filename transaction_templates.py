@@ -5,7 +5,7 @@ def get_transaction_templates(email, pickup):
         'RequestType': 'Article',
         'ProcessType': 'Borrowing',
         'PhotoJournalTitle': 'Journal title',
-        'PhotoArticleTitle': 'Article title',
+        'PhotoArticleTitle': 'Title',
         'PhotoArticleAuthor': 'Author',
         'PhotoJournalVolume': 'Volume',
         'PhotoJournalIssue': 'Issue',
@@ -19,7 +19,7 @@ def get_transaction_templates(email, pickup):
         'RequestType': 'Loan',
         'ProcessType': 'Borrowing',
         'LoanTitle': 'Title',
-        'LoanAuthor': 'Date',
-        'LoanDate': 'Author',
+        'LoanAuthor': 'Author',
+        'LoanDate': 'Date',
     }
 }

@@ -68,7 +68,7 @@ def process_transaction_csv(email, filename, filepath, pickup):
             # If the CSV file contains a value for a column, use that value. If not, use the default value from the template.
             if transaction_type in transaction_templates:
                 transaction = {k: row[v] if v in row else v for k, v in transaction_templates[transaction_type].items()}
-                submit_transaction(transaction, api_base, api_key)
+                submit_transaction(transaction, api_base, api_key, i)
 
             # If the Type column contains an invalid value, print an error message and move to the next row.
             else:

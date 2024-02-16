@@ -15,7 +15,7 @@ def check_user(email, api_base, api_key):
         print(str(response.status_code) + '\n: ' + response.json()['Message'] + '\n')
         sys.exit()
 
-def submit_transaction(transaction, api_base, api_key):
+def submit_transaction(transaction, api_base, api_key, i):
     
     # Submit transaction data to the ILLiad API.
     api_url = api_base + '/Transaction/'
@@ -26,4 +26,4 @@ def submit_transaction(transaction, api_base, api_key):
         print(str(response.json()['TransactionNumber']))
 
     else:
-        print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
+        print(f'Error on line {i}: ' + str(response.status_code) + ': ' + response.json()['Message'] + '\n')
