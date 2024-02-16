@@ -36,7 +36,7 @@ def get_args():
 
 def check_file(filename):
 
-    # Check that the file exists in the data_files directory. 
+    # Check that the file exists in the data_files directory and store the filepath. 
     script_dir = os.path.join(os.path.dirname(__file__), 'data_files')
     filepath = os.path.join(script_dir, filename)
 
