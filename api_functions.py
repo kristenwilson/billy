@@ -12,7 +12,7 @@ def check_user(email, api_base, api_key):
         print('\nUser ' + email + ' confirmed.\n')
     
     else:
-        print(str(response.status_code) + '\n: ' + response.json()['Message'] + '\n')
+        print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
         sys.exit()
 
 def submit_transaction(transaction, api_base, api_key, i):
