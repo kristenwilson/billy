@@ -36,17 +36,45 @@ def get_args():
 
 def check_file(filename):
 
-    # Check that the file exists in the data_files directory and store the filepath. 
     script_dir = os.path.join(os.path.dirname(__file__), 'data_files')
     filepath = os.path.join(script_dir, filename)
 
+    # Check that the file exists.
     if not os.path.isfile(filepath):
         print('Error: The file ' + filepath + ' does not exist.\n')
         sys.exit()
 
-    else:
-        return filepath
+    # Check that the file is a .csv file.
+    elif not filepath.endswith('.csv'):
+        print('Error: The file ' + filepath + ' is not a .csv file.\n')
+        sys.exit()
 
+    # Check that the file contains a Type column.
+    with open(filepath, 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        if 'Type' not in reader.fieldnames:
+            print('Error: The file must contain a column called "Type".\n')
+            sys.exit()
+
+        else:
+            return filepath
+
+def validate_row(row, i):
+    
+    # Check that the row contains data in all required fields according to the transaction type.
+    if row['Type'].lower() == 'article':
+        required_fields = ['Journal title', 'Article title', 'Author', 'Year']
+    if row['Type'].lower() == 'book':
+        required_fields = ['Book title', 'Author', 'Publication date']
+    missing_fields = [field for field in required_fields if field not in row or not row[field]]
+
+    if missing_fields:
+        print(f'Error on line {i}: The following required fields are missing from the row: {", ".join(missing_fields)}.')
+        return False
+    
+    else:
+        return True
+    
 def create_transaction(transaction_type, email, pickup, row, i):
     
     # Create a transaction using the appropriate template.
@@ -91,17 +119,20 @@ def process_transaction_csv(email, filename, filepath, pickup):
         # Create and submit a transaction for each row in the reader object.
         for i, row in enumerate(reader, start=1):
 
-            transaction_type = str.lower(row['Type'])
+            row_valid = validate_row(row, i)
             
-            transaction = create_transaction(transaction_type, email, pickup, row, i)
-            
-            if transaction:
-                transaction_valid = validate_transaction(transaction, i)
+            if row_valid:
 
-                if transaction_valid:
-                    #print(transaction)
-                    #print('\n')
-                    submit_transaction(transaction, api_base, api_key, i)
+                transaction_type = str.lower(row['Type'])
+                transaction = create_transaction(transaction_type, email, pickup, row, i)
+            
+                if transaction:
+                    transaction_valid = validate_transaction(transaction, i)
+                    
+                    if transaction_valid:
+                        #print(transaction)
+                        #print('\n')
+                        submit_transaction(transaction, api_base, api_key, i)
 
     print('\nProcessing complete.')
         

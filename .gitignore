@@ -166,3 +166,5 @@ notes.txt
 .vscode/launch.json
 rispy_test.py
 create_transaction_ris_test.py
+data_files/test_no_type.csv
+data_files/test_articles.tsv
