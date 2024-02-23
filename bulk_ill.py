@@ -48,8 +48,6 @@ def check_file(filename):
         return filepath
 
 def process_transaction_csv(email, filename, filepath, pickup):
-
-    transaction_templates = get_transaction_templates(email, pickup)
     
     # Open the file as a CSV reader object.
     print('Reading file ' + filename + '...\n')
@@ -63,12 +61,13 @@ def process_transaction_csv(email, filename, filepath, pickup):
         for i, row in enumerate(reader, start=1):
 
             transaction_type = str.lower(row['Type'])
+            transaction_templates = get_transaction_templates(email, pickup, row)
 
             # If the Type column contains a valid value, create a transaction using the appropriate template.
             # If the CSV file contains a value for a column, use that value. If not, use the default value from the template.
             if transaction_type in transaction_templates:
-                transaction = {k: row[v] if v in row else v for k, v in transaction_templates[transaction_type].items()}
-                submit_transaction(transaction, api_base, api_key, i)
+                transaction = {k: row.get(v, v) for k, v in transaction_templates[transaction_type].items()}
+                submit_transaction(transaction, api_base, api_key)
 
             # If the Type column contains an invalid value, print an error message and move to the next row.
             else:

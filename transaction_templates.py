@@ -1,25 +1,25 @@
-def get_transaction_templates(email, pickup):
+def get_transaction_templates(email, pickup, row):
     return {
      'article': {
         'ExternalUserId': email,
         'RequestType': 'Article',
         'ProcessType': 'Borrowing',
-        'PhotoJournalTitle': 'Journal title',
-        'PhotoArticleTitle': 'Title',
-        'PhotoArticleAuthor': 'Author',
-        'PhotoJournalVolume': 'Volume',
-        'PhotoJournalIssue': 'Issue',
-        'PhotoJournalYear': 'Year',    
-        'PhotoJournalInclusivePages': 'Pages',
-        'DOI': 'DOI',
+        'PhotoJournalTitle': row.get('Journal title', 'Unknown'),
+        'PhotoArticleTitle': row.get('Title', 'Unknown'),
+        'PhotoArticleAuthor': row.get('Author', 'Unknown'),
+        'PhotoJournalVolume': row.get('Volume', 'Unknown'),
+        'PhotoJournalIssue': row.get('Issue', 'Unknown'),
+        'PhotoJournalYear': row.get('Year', 'Unknown'),    
+        'PhotoJournalInclusivePages': row.get('Pages', 'Unknown'),
+        'DOI': row.get('DOI', 'Unknown')
     },
     'book': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
         'RequestType': 'Loan',
         'ProcessType': 'Borrowing',
-        'LoanTitle': 'Title',
-        'LoanAuthor': 'Author',
-        'LoanDate': 'Date',
+        'LoanTitle': row.get('Title', 'Unknown'),
+        'LoanAuthor': row.get('Author', 'Unknown'),
+        'LoanDate': row.get('Date', 'Unknown'),
     }
 }
