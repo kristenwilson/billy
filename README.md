@@ -13,25 +13,29 @@ Use `config.py.template` to create `config.py`. Fill in the values for your ILLi
 python3 bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
 ```
 
-## Upload files
-Place any files you want to process in the 'data_files' folder. (This folder also contains some test files.) The file you use with this script must be a plaintext .csv file 
+## Data files
+Place any files you want to process in the 'data_files' folder. (This folder also contains some teplates and test files.) 
 
-Required fields
-* Type (supported values are "book" or "article")
+The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field.
 
-Book request fields
-* Title
-* Author
-* Date
+\* required field
 
-Journal request fields
-* Article title
-* Journal title
-* Author
+### Book request fields
+* Type='book'* 
+* Book title*
+* Author*
+* Publication date*
+* Publisher
+* ISSN/ISBN
+
+### Journal request fields
+* Type='article'*
+* Article title*
+* Journal title*
+* Author*
+* Year*
 * Volume
 * Issue
-* Year
 * Pages
 * DOI
-
-
+* ISSN/ISBN
