@@ -9,7 +9,11 @@ def check_user(email, api_base, api_key):
 
     response = requests.get(api_url, headers=headers)
     if response.status_code == 200:
-        print('\nUser ' + email + ' confirmed.\n')
+        if response.json()['Cleared'] == 'Yes':
+            print('\nUser ' + email + ' confirmed.\n')
+        else: 
+            print('\nUser ' + email + ' is not cleared to place requests.\n')
+            sys.exit()
     
     else:
         print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
