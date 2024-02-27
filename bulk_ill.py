@@ -22,17 +22,23 @@ def get_args():
     parser.add_argument('-p', '--pickup', 
                         help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.',
                         choices=['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension'])
+    parser.add_argument('-t', '--test', action='store_true',
+                        help='Run the script in test mode to output a report showing which transactions will be created and which will produce errors.')
     args = parser.parse_args()
     
     # Assign command line arguments to variables
     filename = args.filename
     email = args.email
+    
     if args.pickup:
         pickup = args.pickup
     else:
         pickup = ''
+
+    if args.test:
+        test_mode = True
     
-    return email, filename, pickup
+    return email, filename, pickup, test_mode
 
 def check_file(filename):
 
@@ -69,7 +75,7 @@ def validate_row(row, i):
     missing_fields = [field for field in required_fields if field not in row or not row[field]]
 
     if missing_fields:
-        print(f'Error on line {i}: The following required fields are missing from the row: {", ".join(missing_fields)}.')
+        print(f'Error on line {i}: The following required fields are missing from the row: {", ".join(missing_fields)}.\n')
         return False
     
     else:
@@ -100,13 +106,13 @@ def validate_transaction(transaction, i):
         missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
         
         if missing_fields:
-            print(f'Error on line {i}: The following required fields are missing from the transaction: {", ".join(missing_fields)}.')
+            print(f'Error on line {i}: The following required fields are missing from the transaction: {", ".join(missing_fields)}.\n')
             return False
     
         else:
             return True
 
-def process_transaction_csv(email, filename, filepath, pickup):
+def process_transaction_csv(email, filename, filepath, pickup, test_mode):
     
     # Open the file as a CSV reader object.
     print('Reading file ' + filename + '...\n')
@@ -119,28 +125,30 @@ def process_transaction_csv(email, filename, filepath, pickup):
         # Create and submit a transaction for each row in the reader object.
         for i, row in enumerate(reader, start=1):
 
-            row_valid = validate_row(row, i)
-            
-            if row_valid:
+            if not validate_row(row, i):
+                continue
 
-                transaction_type = str.lower(row['Type'])
-                transaction = create_transaction(transaction_type, email, pickup, row, i)
-            
-                if transaction:
-                    transaction_valid = validate_transaction(transaction, i)
-                    
-                    if transaction_valid:
-                        #print(transaction)
-                        #print('\n')
-                        submit_transaction(transaction, api_base, api_key, i)
+            transaction_type = str.lower(row['Type'])
+            transaction = create_transaction(transaction_type, email, pickup, row, i)
+
+            if not transaction or not validate_transaction(transaction, i):
+                continue
+
+            if test_mode:
+                print(f'Transaction {i}: ', end='')
+                print(transaction)
+                print('\n')
+
+            else:        
+                submit_transaction(transaction, api_base, api_key, i)
 
     print('\nProcessing complete.')
         
 def main():
-    email, filename, pickup = get_args()
+    email, filename, pickup, test_mode = get_args()
     filepath = check_file(filename)
     check_user(email, api_base, api_key)
-    process_transaction_csv(email, filename, filepath, pickup)
+    process_transaction_csv(email, filename, filepath, pickup, test_mode)
 
 if __name__ == '__main__':
     main()
