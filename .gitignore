@@ -168,3 +168,4 @@ rispy_test.py
 create_transaction_ris_test.py
 data_files/test_no_type.csv
 data_files/test_articles.tsv
+api_test_get_user.py

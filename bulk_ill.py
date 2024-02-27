@@ -9,7 +9,7 @@ import argparse
 import csv
 from config import api_key, api_base
 from transaction_templates import get_transaction_templates
-from api_functions import check_user, submit_transaction
+from illiad_api_utils import check_user, submit_transaction
 
 def get_args():
     
