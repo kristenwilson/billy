@@ -69,6 +69,11 @@ def check_file(filename):
 
 def validate_row(row, i):
     
+    # Check that the row contains a valid value in the Type column.
+    if row['Type'].lower() not in ['article', 'book']:
+        print(f'Error on line {i}: The Type column must contain either "article" or "book".\n')
+        return False
+    
     # Check that the row contains data in all required fields according to the transaction type.
     if row['Type'].lower() == 'article':
         required_fields = ['Journal title', 'Article title', 'Author', 'Year']
