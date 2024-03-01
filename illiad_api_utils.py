@@ -27,7 +27,8 @@ def submit_transaction(transaction, api_base, api_key, i):
 
     response = requests.post(api_url, headers=headers, json=transaction)
     if response.status_code == 200:
-        print(f'Transaction created on line {i}: ' + str(response.json()['TransactionNumber']))
+        return response.json()['TransactionNumber'], None
 
     else:
-        print(f'Error on line {i}: ' + str(response.status_code) + ': ' + response.json()['Message'] + '\n')
+        error = (f'Error on line {i}: ' + str(response.status_code) + ': ' + response.json()['Message'] + '\n')
+        return None, error

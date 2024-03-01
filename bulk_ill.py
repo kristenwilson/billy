@@ -67,12 +67,13 @@ def check_file(filename):
         else:
             return filepath
 
-def validate_row(row, i):
+def validate_row(row):
     
     # Check that the row contains a valid value in the Type column.
     if row['Type'].lower() not in ['article', 'book']:
-        print(f'Error on line {i}: The Type column must contain either "article" or "book".\n')
-        return False
+        error = f'The Type column must contain either "article" or "book".'
+        #print(error)
+        return error
     
     # Check that the row contains data in all required fields according to the transaction type.
     if row['Type'].lower() == 'article':
@@ -82,13 +83,11 @@ def validate_row(row, i):
     missing_fields = [field for field in required_fields if field not in row or not row[field]]
 
     if missing_fields:
-        print(f'Error on line {i}: The following required fields are missing from the row: {", ".join(missing_fields)}.\n')
-        return False
-    
-    else:
-        return True
-    
-def create_transaction(transaction_type, email, pickup, row, i):
+        error = f'The following required fields are missing from the row: {", ".join(missing_fields)}.'
+        #print(error)
+        return error
+     
+def create_transaction(transaction_type, email, pickup, row):
     
     # Create a transaction using the appropriate template.
     transaction_templates = get_transaction_templates(email, pickup, row)
@@ -97,13 +96,15 @@ def create_transaction(transaction_type, email, pickup, row, i):
         # If the Type column contains a valid value, create a transaction using the appropriate template.
         # If the CSV file contains a value for a column, use that value. If not, use the default value from the template.
         transaction = {k: row.get(v, v) for k, v in transaction_templates[transaction_type].items()}
-        return transaction
+        return transaction, None
 
     # If the Type column contains an invalid value, print an error message and move to the next row.
     else:
-        print(f'Error on line {i}: The Type column must contain either "article" or "book".')
+        error = f'The Type column must contain either "article" or "book".'
+        #print(error)
+        return None, error
 
-def validate_transaction(transaction, i):
+def validate_transaction(transaction):
                
         # Check that the transaction contains all required fields.
         if transaction['RequestType'] == 'Article':
@@ -113,43 +114,70 @@ def validate_transaction(transaction, i):
         missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
         
         if missing_fields:
-            print(f'Error on line {i}: The following required fields are missing from the transaction: {", ".join(missing_fields)}.\n')
-            return False
-    
-        else:
-            return True
+            error = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
+            #print(error)
+            return error
 
 def process_transaction_csv(email, filename, filepath, pickup, test_mode):
     
-    # Open the file as a CSV reader object.
-    print('Reading file ' + filename + '...\n')
+    if test_mode:
+        print('Running in test mode. Transactions will be included in the results file but not submitted.\n')
     
+    print('Processing transactions...\n')
+
+    # Open the file as a CSV reader object.    
     with open(filepath, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
+
+        # Create a new file for the results.
+        with open('results.csv', 'w', newline='') as resultsfile:
+            writer = None
+
+            # Create a header row for the results file.
+            fieldnames = reader.fieldnames + ['Error', 'Transaction', 'Transaction number']
+            writer = csv.DictWriter(resultsfile, fieldnames=fieldnames)
+            writer.writeheader()
         
-        print('Creating transactions...\n')
-        
-        # Create and submit a transaction for each row in the reader object.
-        for i, row in enumerate(reader, start=1):
+            # Create and process a transaction for each row in the reader object.
+            for i, row in enumerate(reader, start=1):
 
-            if not validate_row(row, i):
-                continue
+                result = {'Error': None, 'Transaction': None, 'Transaction number': None}
 
-            transaction_type = str.lower(row['Type'])
-            transaction = create_transaction(transaction_type, email, pickup, row, i)
+                # Validate the row.    
+                result = {'Error': validate_row(row)}
+                
+                # If there are no errors in the row, create a transaction.
+                if not result['Error']:
+                    transaction_type = str.lower(row['Type'])
+                    result['Transaction'], result['Error'] = create_transaction(transaction_type, email, pickup, row)
 
-            if not transaction or not validate_transaction(transaction, i):
-                continue
+                # Validate the transaction.
+                if not result['Error']:
+                    result['Error'] = validate_transaction(result['Transaction'])
+                
+                # If there are any errors, append them to the original row and write to the results file.
+                # Row will not be submitted if there are errors.
+                if result['Error']:
+                    row.update(result)
+                    writer.writerow(row)
+                    print(f'Row {i}: ' + result['Error'] + '\n')
+                    continue
+                
+                # If in test mode, append the transaction to the original row and write to the results file.
+                if test_mode:
+                    row.update(result)
+                    writer.writerow(row)
+                    print(f'Row {i}: Created the following transaaction data: ' + str(result['Transaction']) + '\n')
 
-            if test_mode:
-                print(f'Transaction {i}: ', end='')
-                print(transaction)
-                print('\n')
-
-            else:        
-                submit_transaction(transaction, api_base, api_key, i)
+                # If not in test mode, submit the transaction and append the results to the original row.
+                if not test_mode:        
+                    result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
+                    row.update(result)
+                    writer.writerow(row)
+                    print(f'Row {i}: Created transaction number {result["Transaction number"]}' + '\n')
 
     print('\nProcessing complete.')
+    print('Results have been saved to results.csv.\n')
         
 def main():
     email, filename, pickup, test_mode = get_args()
