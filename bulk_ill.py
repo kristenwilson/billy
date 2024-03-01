@@ -37,6 +37,8 @@ def get_args():
 
     if args.test:
         test_mode = True
+    else:
+        test_mode = False
     
     return email, filename, pickup, test_mode
 
