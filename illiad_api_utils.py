@@ -1,4 +1,8 @@
-import requests
+try:
+    import requests
+except ImportError:
+    print('The requests library is required for this script. Please install it with "pip install requests".')
+    exit()
 import sys
 
 def check_user(email, api_base, api_key):
