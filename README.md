@@ -5,7 +5,8 @@ A Python script that creates interlibrary loan (ILL) transactions from a file of
 ## Prerequisites
 ### Required libraries
 Install the requests library.
-```python -m pip install requests
+```python
+python3 -m pip install requests
 ```
 
 ### ILLiad API
@@ -19,7 +20,15 @@ python3 bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
 
-Valid pickup locations include: 'Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension'.
+Valid pickup locations include:
+* 'Hill'
+* 'Hunt'
+* 'Design'
+* 'Natural Resources'
+* 'Veterinary Medicine'
+* 'Textiles'
+* 'METRC'
+* 'Distance/Extension'
 
 ## Data files
 Place any files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
