@@ -3,6 +3,11 @@
 A Python script that creates interlibrary loan (ILL) transactions from a file of citation data.
 
 ## Prerequisites
+### Required libraries
+Install the requests library.
+```python -m pip install requests
+```
+
 ### ILLiad API
 To connect to the ILLiad API, ask your ILLiad administrator to create an API key for this project. You will also need the base URL for your ILLiad system. It will look like `https://your.illiad.edu/ILLiadWebPlatform`.
 ### Config

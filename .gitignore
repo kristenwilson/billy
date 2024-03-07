@@ -170,3 +170,4 @@ data_files/test_no_type.csv
 data_files/test_articles.tsv
 api_test_get_user.py
 results.csv
+data_files/not_csv.txt

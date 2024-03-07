@@ -113,6 +113,10 @@ def validate_transaction(transaction):
             required_fields = ['ExternalUserId', 'ItemInfo4', 'RequestType', 'ProcessType', 'LoanTitle', 'LoanAuthor', 'LoanDate']
         missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
         
+        if 'ItemInfo4' in missing_fields:
+            missing_fields.remove('ItemInfo4')
+            missing_fields.append('Pickup Location')
+        
         if missing_fields:
             error = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
             #print(error)
@@ -167,7 +171,7 @@ def process_transaction_csv(email, filename, filepath, pickup, test_mode):
                 if test_mode:
                     row.update(result)
                     writer.writerow(row)
-                    print(f'Row {i}: Created the following transaaction data: ' + str(result['Transaction']) + '\n')
+                    print(f'Row {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
 
                 # If not in test mode, submit the transaction and append the results to the original row.
                 if not test_mode:        
