@@ -9,7 +9,7 @@ import argparse
 import csv
 from config import api_key, api_base
 from transaction_templates import get_transaction_templates
-from api_functions import check_user, submit_transaction
+from illiad_api_utils import check_user, submit_transaction
 
 def get_args():
     
@@ -22,66 +22,172 @@ def get_args():
     parser.add_argument('-p', '--pickup', 
                         help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.',
                         choices=['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension'])
+    parser.add_argument('-t', '--test', action='store_true',
+                        help='Run the script in test mode to output a report showing which transactions will be created and which will produce errors.')
     args = parser.parse_args()
     
     # Assign command line arguments to variables
     filename = args.filename
     email = args.email
+    
     if args.pickup:
         pickup = args.pickup
     else:
         pickup = ''
+
+    if args.test:
+        test_mode = True
+    else:
+        test_mode = False
     
-    return email, filename, pickup
+    return email, filename, pickup, test_mode
 
 def check_file(filename):
 
-    # Check that the file exists in the data_files directory. 
     script_dir = os.path.join(os.path.dirname(__file__), 'data_files')
     filepath = os.path.join(script_dir, filename)
 
+    # Check that the file exists.
     if not os.path.isfile(filepath):
         print('Error: The file ' + filepath + ' does not exist.\n')
         sys.exit()
 
+    # Check that the file is a .csv file.
+    elif not filepath.endswith('.csv'):
+        print('Error: The file ' + filepath + ' is not a .csv file.\n')
+        sys.exit()
+
+    # Check that the file contains a Type column.
+    with open(filepath, 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        if 'Type' not in reader.fieldnames:
+            print('Error: The file must contain a column called "Type".\n')
+            sys.exit()
+
+        else:
+            return filepath
+
+def validate_row(row):
+    
+    # Check that the row contains a valid value in the Type column.
+    if row['Type'].lower() not in ['article', 'book']:
+        error = f'The Type column must contain either "article" or "book".'
+        #print(error)
+        return error
+    
+    # Check that the row contains data in all required fields according to the transaction type.
+    if row['Type'].lower() == 'article':
+        required_fields = ['Journal title', 'Article title', 'Author', 'Year']
+    if row['Type'].lower() == 'book':
+        required_fields = ['Book title', 'Author', 'Publication date']
+    missing_fields = [field for field in required_fields if field not in row or not row[field]]
+
+    if missing_fields:
+        error = f'The following required fields are missing from the row: {", ".join(missing_fields)}.'
+        #print(error)
+        return error
+     
+def create_transaction(transaction_type, email, pickup, row):
+    
+    # Create a transaction using the appropriate template.
+    transaction_templates = get_transaction_templates(email, pickup, row)
+    if transaction_type in transaction_templates:
+
+        # If the Type column contains a valid value, create a transaction using the appropriate template.
+        # If the CSV file contains a value for a column, use that value. If not, use the default value from the template.
+        transaction = {k: row.get(v, v) for k, v in transaction_templates[transaction_type].items()}
+        return transaction, None
+
+    # If the Type column contains an invalid value, print an error message and move to the next row.
     else:
-        return filepath
+        error = f'The Type column must contain either "article" or "book".'
+        #print(error)
+        return None, error
 
-def process_transaction_csv(email, filename, filepath, pickup):
+def validate_transaction(transaction):
+               
+        # Check that the transaction contains all required fields.
+        if transaction['RequestType'] == 'Article':
+            required_fields = ['ExternalUserId', 'RequestType', 'ProcessType', 'PhotoJournalTitle', 'PhotoArticleTitle', 'PhotoArticleAuthor', 'PhotoJournalYear']
+        if transaction['RequestType'] == 'Loan':
+            required_fields = ['ExternalUserId', 'ItemInfo4', 'RequestType', 'ProcessType', 'LoanTitle', 'LoanAuthor', 'LoanDate']
+        missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
+        
+        if 'ItemInfo4' in missing_fields:
+            missing_fields.remove('ItemInfo4')
+            missing_fields.append('Pickup Location')
+        
+        if missing_fields:
+            error = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
+            #print(error)
+            return error
 
-    transaction_templates = get_transaction_templates(email, pickup)
+def process_transaction_csv(email, filename, filepath, pickup, test_mode):
     
-    # Open the file as a CSV reader object.
-    print('Reading file ' + filename + '...\n')
+    if test_mode:
+        print('Running in test mode. Transactions will be included in the results file but not submitted.\n')
     
+    print('Processing transactions...\n')
+
+    # Open the file as a CSV reader object.    
     with open(filepath, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
 
-        print('Creating transactions...\n')
+        # Create a new file for the results.
+        with open('results.csv', 'w', newline='') as resultsfile:
+            writer = None
 
-        # Create and submit a transaction for each row in the reader object.
-        for i, row in enumerate(reader, start=1):
+            # Create a header row for the results file.
+            fieldnames = reader.fieldnames + ['Error', 'Transaction', 'Transaction number']
+            writer = csv.DictWriter(resultsfile, fieldnames=fieldnames)
+            writer.writeheader()
+        
+            # Create and process a transaction for each row in the reader object.
+            for i, row in enumerate(reader, start=1):
 
-            transaction_type = str.lower(row['Type'])
+                result = {'Error': None, 'Transaction': None, 'Transaction number': None}
 
-            # If the Type column contains a valid value, create a transaction using the appropriate template.
-            # If the CSV file contains a value for a column, use that value. If not, use the default value from the template.
-            if transaction_type in transaction_templates:
-                transaction = {k: row[v] if v in row else v for k, v in transaction_templates[transaction_type].items()}
-                submit_transaction(transaction, api_base, api_key)
+                # Validate the row.    
+                result = {'Error': validate_row(row)}
+                
+                # If there are no errors in the row, create a transaction.
+                if not result['Error']:
+                    transaction_type = str.lower(row['Type'])
+                    result['Transaction'], result['Error'] = create_transaction(transaction_type, email, pickup, row)
 
-            # If the Type column contains an invalid value, print an error message and move to the next row.
-            else:
-                print(f'Error on line {i}: The Type column must contain either "article" or "book".')
-                continue
+                # Validate the transaction.
+                if not result['Error']:
+                    result['Error'] = validate_transaction(result['Transaction'])
+                
+                # If there are any errors, append them to the original row and write to the results file.
+                # Row will not be submitted if there are errors.
+                if result['Error']:
+                    row.update(result)
+                    writer.writerow(row)
+                    print(f'Row {i}: ' + result['Error'] + '\n')
+                    continue
+                
+                # If in test mode, append the transaction to the original row and write to the results file.
+                if test_mode:
+                    row.update(result)
+                    writer.writerow(row)
+                    print(f'Row {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
+
+                # If not in test mode, submit the transaction and append the results to the original row.
+                if not test_mode:        
+                    result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
+                    row.update(result)
+                    writer.writerow(row)
+                    print(f'Row {i}: Created transaction number {result["Transaction number"]}' + '\n')
 
     print('\nProcessing complete.')
+    print('Results have been saved to results.csv.\n')
         
 def main():
-    email, filename, pickup = get_args()
+    email, filename, pickup, test_mode = get_args()
     filepath = check_file(filename)
     check_user(email, api_base, api_key)
-    process_transaction_csv(email, filename, filepath, pickup)
+    process_transaction_csv(email, filename, filepath, pickup, test_mode)
 
 if __name__ == '__main__':
     main()
