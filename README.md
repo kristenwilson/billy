@@ -30,10 +30,10 @@ Valid pickup locations include:
 * 'METRC'
 * 'Distance/Extension'
 
-## Data files
-Place any files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
+## .csv files
+Place any .csv files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
 
-The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field.
+The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field. You may need to do some pre-processing to get your citation data into the correct format.
 
 \* required field
 
@@ -56,3 +56,7 @@ The file you use with this script must be a plaintext .csv file. It can include 
 * Pages
 * DOI
 * ISSN/ISBN
+
+## .ris files
+Place any .ris files you want to process in the 'data_files' folder. Properly formatted .ris files should be processed without any additional intervention.
+

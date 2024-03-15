@@ -12,20 +12,42 @@ def validate_file(filename):
         print('Error: The file ' + filepath + ' does not exist.\n')
         sys.exit()
 
-    # Check that the file is a .csv file.
-    elif not filepath.endswith('.csv'):
-        print('Error: The file ' + filepath + ' is not a .csv file.\n')
+    else:
+        return filepath
+
+def validate_file_type(filename, filepath):
+
+    filetype = None    
+    
+    try:
+        with open(filepath, 'r') as file:
+            first_line = file.readline()
+            if first_line.startswith('TY  -'):
+                filetype = 'ris'
+                return filetype
+            
+            elif ',' in first_line:        
+                try:
+                    with open(filepath, 'r') as csvfile:
+                        reader = csv.DictReader(csvfile)
+                        if 'Type' not in reader.fieldnames:
+                            print('Error: The file must contain a column called "Type".\n')
+                            sys.exit()
+
+                        filetype = 'csv'
+                        return filetype
+
+                except csv.Error:
+                    print('Error: The file ' + filepath + ' is not a valid CSV file.\n')
+                    sys.exit()
+                
+            else:
+                print('Error: The file ' + filename + ' is not a valid file type. The file must be a CSV or RIS file.\n')
+                sys.exit()
+
+    except Exception as e:
+        print('Error: ' + str(e) + '\n')
         sys.exit()
-
-    # Check that the file contains a Type column.
-    with open(filepath, 'r') as csvfile:
-        reader = csv.DictReader(csvfile)
-        if 'Type' not in reader.fieldnames:
-            print('Error: The file must contain a column called "Type".\n')
-            sys.exit()
-
-        else:
-            return filepath
 
 def validate_row(row):
     
