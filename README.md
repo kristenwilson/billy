@@ -4,9 +4,9 @@ A Python script that creates interlibrary loan (ILL) transactions from a file of
 
 ## Prerequisites
 ### Required libraries
-Install the requests library.
+Install required packages.
 ```python
-python3 -m pip install requests
+pip -r requirements.txt
 ```
 
 ### ILLiad API

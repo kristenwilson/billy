@@ -69,6 +69,8 @@ def validate_row(row):
         #print(error)
         return error
     
+#TODO: Add validation for RIS entries.
+    
 def validate_transaction(transaction):
             
     # Check that the transaction contains all required fields.
