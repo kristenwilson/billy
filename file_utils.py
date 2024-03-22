@@ -1,5 +1,9 @@
 import csv
-import rispy
+try:
+    import rispy
+except ImportError:
+    print('The rispy library is required for this script. Please install it with "pip install rispy".')
+    exit()
 
 def open_csv(source_file):
     reader = csv.DictReader(source_file)
