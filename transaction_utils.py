@@ -29,11 +29,11 @@ def process_transaction_csv(email, filename, filepath, pickup, test_mode):
     print('Processing transactions...\n')
 
     # Open the file as a CSV reader object.    
-    with open(filepath, 'r') as source_file:
+    with open(filepath, 'r', encoding='utf-8') as source_file:
         reader = open_csv(source_file)
 
         # Create a new file for the results.
-        with open('results.csv', 'w', newline='') as resultsfile:
+        with open('results.csv', 'w', encoding= 'utf-8', newline='') as resultsfile:
             writer = create_results_file(reader, resultsfile)
             
             # Create and process a transaction for each row in the reader object.
@@ -99,11 +99,11 @@ def process_transaction_ris(email, filename, filepath, pickup, test_mode):
     print('Processing transactions...\n')
 
     # Open the file as a RIS reader object.    
-    with open(filepath, 'r') as source_file:
+    with open(filepath, 'r', encoding='utf-8') as source_file:
         reader = open_ris(source_file)
 
         # Create a new file for the results.
-        with open('results.csv', 'w', newline='') as resultsfile:
+        with open('results.csv', 'w', encoding='utf-8', newline='') as resultsfile:
             writer = create_results_file(reader, resultsfile)
             
             # Create and process a transaction for each row in the reader object.
