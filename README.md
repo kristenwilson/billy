@@ -5,7 +5,7 @@ A Python script that creates interlibrary loan (ILL) transactions from a file of
 ## Prerequisites
 ### Install required libraries
 ```python
-pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 ### ILLiad API
 To connect to the ILLiad API, ask your ILLiad administrator to create an API key for this project. You will also need the base URL for your ILLiad system. It will look like `https://your.illiad.edu/ILLiadWebPlatform`.
