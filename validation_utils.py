@@ -20,7 +20,7 @@ def validate_file_type(filename, filepath):
     filetype = None    
     
     try:
-        with open(filepath, 'r') as file:
+        with open(filepath, 'r', encoding='utf-8') as file:
             first_line = file.readline()
             if first_line.startswith('TY  -'):
                 filetype = 'ris'
@@ -28,7 +28,7 @@ def validate_file_type(filename, filepath):
             
             elif ',' in first_line:        
                 try:
-                    with open(filepath, 'r') as csvfile:
+                    with open(filepath, 'r', encoding='utf-8') as csvfile:
                         reader = csv.DictReader(csvfile)
                         if 'Type' not in reader.fieldnames:
                             print('Error: The file must contain a column called "Type".\n')
