@@ -21,8 +21,12 @@ def validate_file_type(filename, filepath):
     
     try:
         with open(filepath, 'r', encoding='utf-8') as file:
-            first_line = file.readline()
-            if first_line.startswith('TY  -'):
+            line = file.readline()
+            while line.strip() == '':
+                line = file.readline()
+                first_line = line.strip()
+            
+            if first_line.__contains__('TY  -'):
                 filetype = 'ris'
                 return filetype
             
