@@ -5,7 +5,7 @@ A Python script that creates interlibrary loan (ILL) transactions from a file of
 ## Prerequisites
 ### Install required libraries
 ```python
-python3 -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 ### ILLiad API
 To connect to the ILLiad API, ask your ILLiad administrator to create an API key for this project. You will also need the base URL for your ILLiad system. It will look like `https://your.illiad.edu/ILLiadWebPlatform`.
@@ -14,7 +14,7 @@ Use `config.py.template` to create `config.py`. Fill in the values for your ILLi
 
 ## Usage
 ```python
-python3 bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
+python bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
 
