@@ -33,6 +33,6 @@ def map_rispy(filepath):
     mapping["PY"] = "year" # This is the default mapping for years, but it is included here for clarity.
     mapping["Y1"] = "year" # The 'Y1' field is often used interchangably with 'PY'.
     
-    with open(filepath, 'r') as bibliography_file:
-        entries = rispy.load(bibliography_file, encoding='utf-8', mapping=mapping)
+    with open(filepath, 'r', encoding='utf-8') as bibliography_file:
+        entries = rispy.load(bibliography_file, mapping=mapping)
     return entries
