@@ -3,12 +3,10 @@
 A Python script that creates interlibrary loan (ILL) transactions from a file of citation data.
 
 ## Prerequisites
-### Required libraries
-Install the requests library.
+### Install required libraries
 ```python
-python3 -m pip install requests
+python -m pip install -r requirements.txt
 ```
-
 ### ILLiad API
 To connect to the ILLiad API, ask your ILLiad administrator to create an API key for this project. You will also need the base URL for your ILLiad system. It will look like `https://your.illiad.edu/ILLiadWebPlatform`.
 ### Config
@@ -16,7 +14,7 @@ Use `config.py.template` to create `config.py`. Fill in the values for your ILLi
 
 ## Usage
 ```python
-python3 bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
+python bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
 
@@ -30,10 +28,10 @@ Valid pickup locations include:
 * 'METRC'
 * 'Distance/Extension'
 
-## Data files
-Place any files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
+## .csv files
+Place any .csv files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
 
-The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field.
+The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field. You may need to do some pre-processing to get your citation data into the correct format.
 
 \* required field
 
@@ -56,3 +54,7 @@ The file you use with this script must be a plaintext .csv file. It can include 
 * Pages
 * DOI
 * ISSN/ISBN
+
+## .ris files
+Place any .ris files you want to process in the 'data_files' folder. Properly formatted .ris files should be processed without any additional intervention.
+
