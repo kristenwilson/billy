@@ -159,18 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .vscode/launch.json
-api_test_get.py
-api_test_post.py
 config.py
-notes.txt
-.vscode/launch.json
-rispy_test.py
-create_transaction_ris_test.py
-data_files/test_no_type.csv
-data_files/test_articles.tsv
-data_files/not_csv.txt
-api_testing/api_test_get_user.py
-data_files/not_csv.txt
 results.csv
 process_ris_test.py
 data_files/edpsychtest.csv
