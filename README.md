@@ -28,25 +28,28 @@ Valid pickup locations include:
 * 'METRC'
 * 'Distance/Extension'
 
-## .csv files
-Place any .csv files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
+## RIS files
+RIS is a format for citation data used by many major databases and library applications. Place any RIS files you want to process in the 'data_files' folder. Properly formatted RIS files should be processed without any additional intervention.
+
+## CSV files
+Place any CSV files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
 
 The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field. You may need to do some pre-processing to get your citation data into the correct format.
 
 \* required field
 
 ### Book request fields
-* Type='book'* 
-* Book title*
-* Author*
+* Type='book' *
+* Book title *
+* Author *
 * Publication date*
 * Publisher
 * ISSN/ISBN
 
-### Journal request fields
-* Type='article'*
-* Article title*
-* Journal title*
+### Article request fields
+* Type='article' *
+* Article title *
+* Journal title *
 * Author*
 * Year*
 * Volume
@@ -54,7 +57,4 @@ The file you use with this script must be a plaintext .csv file. It can include 
 * Pages
 * DOI
 * ISSN/ISBN
-
-## .ris files
-Place any .ris files you want to process in the 'data_files' folder. Properly formatted .ris files should be processed without any additional intervention.
 
