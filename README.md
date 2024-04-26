@@ -50,8 +50,8 @@ The file you use with this script must be a plaintext .csv file. It can include 
 * Type='article' *
 * Article title *
 * Journal title *
-* Author*
-* Year*
+* Author *
+* Year *
 * Volume
 * Issue
 * Pages
