@@ -32,29 +32,38 @@ Valid pickup locations include:
 RIS is a format for citation data used by many major databases and library applications. Place any RIS files you want to process in the 'data_files' folder. Properly formatted RIS files should be processed without any additional intervention.
 
 ## CSV files
-Place any CSV files you want to process in the 'data_files' folder. (This folder also contains some templates and test files.) 
+Place any CSV files you want to process in the 'data_files' folder. (This folder also contains a CSV template and test file.) 
 
-The file you use with this script must be a plaintext .csv file. It can include a combination of book and article request data. Each row must contain the required fields as defined by the value in the 'type' field. You may need to do some pre-processing to get your citation data into the correct format.
+The file you use with this script must be a plaintext .csv file. It can include a combination of request formats. Each row must contain the required fields (*) as defined by the value in the 'type' field. 
 
-\* required field
+This file format matches the default output from Zotero. If you are using a different citation manager, you may need to do some pre-processing to get your citation data into the correct format.
 
 ### Book request fields
-* Type='book' *
-* Book title *
+* Item Type = 'book' *
+* Title *
 * Author *
-* Publication date*
+* Publication Year*
 * Publisher
-* ISSN/ISBN
+* ISBN
 
-### Article request fields
-* Type='article' *
-* Article title *
-* Journal title *
+### Journal article request fields
+* Item Type='journalArticle' *
+* Title *
+* Publication Title *
 * Author *
-* Year *
+* Publication Year *
 * Volume
 * Issue
 * Pages
 * DOI
-* ISSN/ISBN
+* ISSN
+
+### Book chapter request fields
+* Item Type='bookSection' *
+* Title *
+* Publication Title *
+* Author *
+* Publication Year *
+* Pages
+* ISBN
 
