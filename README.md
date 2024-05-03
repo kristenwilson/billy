@@ -34,7 +34,7 @@ RIS is a format for citation data used by many major databases and library appli
 ## CSV files
 Place any CSV files you want to process in the 'data_files' folder. (This folder also contains a CSV template and test file.) 
 
-The file you use with this script must be a plaintext .csv file. It can include a combination of request formats. Each row must contain the required fields (*) as defined by the value in the 'type' field. 
+The file you use with this script must be a plaintext .csv file. It can include a combination of request formats. Each row must contain the required fields (*) as defined by the value in the 'Item Type' field. 
 
 This file format matches the default output from Zotero. If you are using a different citation manager, you may need to do some pre-processing to get your citation data into the correct format.
 
