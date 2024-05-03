@@ -21,7 +21,7 @@ def validate_file(filename):
     else:
         return filepath
 
-# Identify the file type (.csv or .ris) and verify that it contains a "Type" field for each citation.
+# Identify the file type (.csv or .ris) and verify that it contains an "Item Type" field for each citation.
 def validate_file_type(filename, filepath):
 
     filetype = None    
@@ -36,6 +36,7 @@ def validate_file_type(filename, filepath):
         # If the first line of the file is a RIS 'type' tag, the file treated as an RIS file.
         if first_line.__contains__('TY  -'):
             filetype = 'ris'
+            print('\nRIS file confirmed.')
             return filetype
         
         # If there is a comma in the first line, the file treated as a CSV file.
@@ -45,12 +46,13 @@ def validate_file_type(filename, filepath):
                 with open(filepath, 'r', encoding='utf-8') as csvfile:
                     reader = csv.DictReader(csvfile)
                     
-                    # Check that the file contains a 'Type' column.
-                    if 'Type' not in reader.fieldnames:
-                        print('Error: The file must contain a column called "Type".\n')
+                    # Check that the file contains an 'Item Type' column.
+                    if 'Item Type' not in reader.fieldnames:
+                        print('Error: The file must contain a column called "Item Type".\n')
                         sys.exit()
 
                     filetype = 'csv'
+                    print('\nCSV file confirmed.')
                     return filetype
             
             # If the file is not a valid CSV file, exit the program.
@@ -67,15 +69,17 @@ def validate_file_type(filename, filepath):
 def validate_row(row):
     
     # Check that the row contains a valid value in the Type column and return an error if it does not.
-    if row['Type'].lower() not in ['article', 'book']:
-        error = f'The Type column must contain either "article" or "book".'
+    if row['Item Type'].lower() not in ['journalarticle', 'book', 'booksection']:
+        error = f'The Item Type column must contain "journalArticle", "bookSection", or "book".'
         return error
     
     # Check that the row contains data in all required fields according to the transaction type and return an error if it does not.
-    if row['Type'].lower() == 'article':
-        required_fields = ['Journal title', 'Article title', 'Author', 'Year']
-    if row['Type'].lower() == 'book':
-        required_fields = ['Book title', 'Author', 'Publication date']
+    if row['Item Type'].lower() == 'journalarticle':
+        required_fields = ['Publication Title', 'Title', 'Author', 'Publication Year']
+    if row['Item Type'].lower() == 'book':
+        required_fields = ['Title', 'Author', 'Publication Year']
+    if row['Item Type'].lower() == 'booksection':
+        required_fields = ['Publication Title', 'Title', 'Author', 'Publication Year']
     missing_fields = [field for field in required_fields if field not in row or not row[field]]
     if missing_fields:
         error = f'The following required fields are missing from the row: {", ".join(missing_fields)}.'
