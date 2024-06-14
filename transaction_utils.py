@@ -4,10 +4,10 @@
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
 # Custom modules
-from transaction_templates import get_transaction_templates_csv, get_transaction_templates_ris
+from transaction_templates import map_csv_type, get_transaction_templates_csv, map_ris_type, get_transaction_templates_ris
 from illiad_api_utils import submit_transaction
-from validation_utils import validate_row, validate_transaction
-from file_utils import open_csv, open_ris, create_results_file
+from validation_utils import validate_transaction
+from file_utils import open_csv, create_results_file
 from rispy_utils import map_rispy
 
 # Configuration
@@ -56,14 +56,11 @@ def process_transaction_csv(email, filename, filepath, pickup, test_mode):
 
                 # Initialize the result dictionary. 
                 result = {'Line number': i, 'Error': None, 'Transaction': None, 'Transaction number': None}
-
-                # Validate the row.    
-                result['Error'] = validate_row(row)
                 
-                # If there are no errors in the row, create a transaction.
-                if not result['Error']:
-                    transaction_type = str.lower(row['Item Type'])
-                    result['Transaction'], result['Error'] = create_transaction_csv(transaction_type, email, pickup, row)
+                # Create a transaction.
+                citation_type = str.lower(row['Item Type'])
+                transaction_type = map_csv_type(citation_type)
+                result['Transaction'], result['Error'] = create_transaction_csv(transaction_type, email, pickup, row)
 
                 # Validate the transaction.
                 if not result['Error']:
@@ -137,7 +134,8 @@ def process_transaction_ris(email, filename, filepath, pickup, test_mode):
             # TODO: Create a function to validate .ris entries.
             
             # If there are no errors in the entry, create a transaction.
-            transaction_type = entry['type_of_reference']
+            citation_type = entry['type_of_reference']
+            transaction_type = map_ris_type(citation_type)
             result['Transaction'], result['Error'] = create_transaction_ris(transaction_type, email, pickup, entry)
 
             # Validate the transaction.

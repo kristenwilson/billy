@@ -65,28 +65,6 @@ def validate_file_type(filename, filepath):
             print('Error: The file ' + filename + ' is not a valid file type. The file must be a CSV or RIS file.\n')
             sys.exit()
 
-# Validate that a row in a .csv file contains required data.
-def validate_row(row):
-    
-    # Check that the row contains a valid value in the Type column and return an error if it does not.
-    if row['Item Type'].lower() not in ['journalarticle', 'book', 'booksection']:
-        error = f'The Item Type column must contain "journalArticle", "bookSection", or "book".'
-        return error
-    
-    # Check that the row contains data in all required fields according to the transaction type and return an error if it does not.
-    if row['Item Type'].lower() == 'journalarticle':
-        required_fields = ['Publication Title', 'Title', 'Author', 'Publication Year']
-    if row['Item Type'].lower() == 'book':
-        required_fields = ['Title', 'Author', 'Publication Year']
-    if row['Item Type'].lower() == 'booksection':
-        required_fields = ['Publication Title', 'Title', 'Author', 'Publication Year']
-    missing_fields = [field for field in required_fields if field not in row or not row[field]]
-    if missing_fields:
-        error = f'The following required fields are missing from the row: {", ".join(missing_fields)}.'
-        return error
-    
-#TODO: Add validation for RIS entries.
-
 # Validate the transaction that will be sent to ILLiad to ensure it contains all required data and return an error if it does not.    
 def validate_transaction(transaction):
             
