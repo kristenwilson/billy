@@ -9,30 +9,44 @@
 # Used by create_transaction_csv.
 def get_transaction_templates_csv(email, pickup, row):
     return {
-     'article': {
+     'journalarticle': {
         'ExternalUserId': email,
         'RequestType': 'Article',
         'ProcessType': 'Borrowing',
-        'PhotoJournalTitle': row.get('Journal title', ''),
-        'PhotoArticleTitle': row.get('Article title', ''),
+        'PhotoJournalTitle': row.get('Publication Title', ''),
+        'PhotoArticleTitle': row.get('Title', ''),
         'PhotoArticleAuthor': row.get('Author', ''),
         'PhotoJournalVolume': row.get('Volume', ''),
         'PhotoJournalIssue': row.get('Issue', ''),
-        'PhotoJournalYear': row.get('Year', ''),    
+        'PhotoJournalYear': row.get('Publication Year', ''),    
         'PhotoJournalInclusivePages': row.get('Pages', ''),
         'DOI': row.get('DOI', ''),
-        'ISSN': row.get('ISSN/ISBN', '')
+        'ISSN': row.get('ISSN', '')
     },
     'book': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
         'RequestType': 'Loan',
         'ProcessType': 'Borrowing',
-        'LoanTitle': row.get('Book title', ''),
+        'LoanTitle': row.get('Title', ''),
         'LoanAuthor': row.get('Author', ''),
-        'LoanDate': row.get('Publication date', ''),
-        'ISSN': row.get('ISSN/ISBN', ''),
+        'LoanDate': row.get('Publication Year', ''),
+        'ISSN': row.get('ISBN', ''),
         'LoanPublisher': row.get('Publisher', ''),
+    },
+    'booksection': {
+        'ExternalUserId': email,
+        'RequestType': 'Article',
+        'ProcessType': 'Borrowing',
+        'PhotoJournalTitle': row.get('Publication Title', ''),
+        'PhotoArticleTitle': row.get('Title', ''),
+        'PhotoArticleAuthor': row.get('Author', ''),
+        'PhotoJournalVolume': row.get('Volume', ''),
+        'PhotoJournalIssue': row.get('Issue', ''),
+        'PhotoJournalYear': row.get('Publication Year', ''),    
+        'PhotoJournalInclusivePages': row.get('Pages', ''),
+        'DOI': row.get('DOI', ''),
+        'ISSN': row.get('ISBN', '')
     }
 }
 

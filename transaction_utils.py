@@ -30,7 +30,7 @@ def create_transaction_csv(transaction_type, email, pickup, row):
 
     # If the Type column contains an invalid value, return an error message and move to the next row.
     else:
-        error = f'The Type field must contain either "article" or "book".'
+        error = f'The Type field must contain either "journalArticle", "book", or "bookSection".'
         return None, error
 
 # Process transactions from a .csv file.
@@ -62,7 +62,7 @@ def process_transaction_csv(email, filename, filepath, pickup, test_mode):
                 
                 # If there are no errors in the row, create a transaction.
                 if not result['Error']:
-                    transaction_type = str.lower(row['Type'])
+                    transaction_type = str.lower(row['Item Type'])
                     result['Transaction'], result['Error'] = create_transaction_csv(transaction_type, email, pickup, row)
 
                 # Validate the transaction.
