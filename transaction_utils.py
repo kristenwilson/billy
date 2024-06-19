@@ -30,7 +30,7 @@ def create_transaction_csv(transaction_type, email, pickup, row):
 
     # If the Type column contains an invalid value, return an error message and move to the next row.
     else:
-        error = f'The Type field must contain either "journalArticle", "book", or "bookSection".'
+        error = f'The Type field contains an unsupported citation type.'
         return None, error
 
 # Process transactions from a .csv file.
@@ -104,7 +104,7 @@ def create_transaction_ris(transaction_type, email, pickup, entry):
 
     # If the Type column contains an invalid value, return an error message and move to the next row.
     else:
-        error = f'The Type field must contain one of the following values: {", ".join(transaction_templates.keys())}'
+        error = f'The Type field contains an unsupported citation type.'
         return None, error
 
 # Process transactions from a .ris file.
