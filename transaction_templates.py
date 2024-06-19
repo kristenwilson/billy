@@ -9,9 +9,10 @@ type_mapping = {
         'CHAP': ['CHAP', 'booksection'],
         'BOOK': ['BOOK', 'book'],
         'THES': ['THES', 'thesis'],
+        'CONF': ['CONF', 'conferencepaper']
     }
 
-# Map CSV citation types to types used by transaction templates.
+# Map citation types to types used by transaction templates.
 def map_citation_type(citation_type):
     for key, values in type_mapping.items():
             if citation_type in values:
@@ -155,5 +156,20 @@ def get_transaction_templates_ris(email, pickup, entry):
         'LoanAuthor': ', '.join(entry.get('authors', '')) if isinstance(entry.get('authors', ''), list) else entry.get('authors', ''),
         'LoanDate': entry.get('year', ''),
         'LoanPublisher': entry.get('publisher', ''),
+    },
+    'CONF': {
+        'ExternalUserId': email,
+        'RequestType': 'Article',
+        'DocumentType': 'Article',
+        'ProcessType': 'Borrowing',
+        'PhotoJournalTitle': entry.get('secondary_title', ''),
+        'PhotoArticleTitle': entry.get('primary_title', ''),
+        'PhotoArticleAuthor': ', '.join(entry.get('authors', '')) if isinstance(entry.get('authors', ''), list) else entry.get('authors', ''),
+        'PhotoJournalYear': entry.get('year', ''),
+        'PhotoJournalInclusivePages': entry.get('start_page', '') + '-' + entry.get('end_page', ''),
+        'PhotoItemPublisher': entry.get('publisher', ''),
+        'PhotoItemPlace': entry.get('place_published', ''),
+        'DOI': entry.get('doi', ''),
+        'ISSN': entry.get('issn', '')
     },
 }
