@@ -4,7 +4,7 @@
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
 # Custom modules
-from transaction_templates import map_csv_type, get_transaction_templates_csv, map_ris_type, get_transaction_templates_ris
+from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 from illiad_api_utils import submit_transaction
 from validation_utils import validate_transaction
 from file_utils import open_csv, create_results_file
@@ -59,7 +59,7 @@ def process_transaction_csv(email, filename, filepath, pickup, test_mode):
                 
                 # Create a transaction.
                 citation_type = str.lower(row['Item Type'])
-                transaction_type = map_csv_type(citation_type)
+                transaction_type = map_citation_type(citation_type)
                 result['Transaction'], result['Error'] = create_transaction_csv(transaction_type, email, pickup, row)
 
                 # Validate the transaction.
@@ -135,7 +135,7 @@ def process_transaction_ris(email, filename, filepath, pickup, test_mode):
             
             # If there are no errors in the entry, create a transaction.
             citation_type = entry['type_of_reference']
-            transaction_type = map_ris_type(citation_type)
+            transaction_type = map_citation_type(citation_type)
             result['Transaction'], result['Error'] = create_transaction_ris(transaction_type, email, pickup, entry)
 
             # Validate the transaction.

@@ -3,21 +3,20 @@
 # Description: Templates to create ILLiad transactions; for use by bulk_ill.py.
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
+# Maps citation types the types used by transaction_templates.py.
+type_mapping = {
+        'JOUR': ['JOUR', 'EJOUR', 'MGZN', 'NEWS', 'ENCYC', 'CONF', 'CPAPER', 'GEN', 'ELEC', 'journalarticle', 'newspaperarticle, magazinearticle', 'encyclopediaarticle'],
+        'CHAP': ['CHAP', 'booksection'],
+        'BOOK': ['BOOK', 'book'],
+        'THES': ['THES', 'thesis'],
+    }
 
 # Map CSV citation types to types used by transaction templates.
-def map_csv_type(citation_type):
-    if citation_type == 'journalarticle' or citation_type == 'newspaperarticle' or citation_type == 'magazinearticle' or citation_type == 'encyclopediaarticle':
-        return 'journalarticle'
-    elif citation_type == 'booksection':
-        return 'booksection'
-    elif citation_type == 'book':
-        return 'book'
-    elif citation_type == 'thesis':
-        return 'thesis'
-    elif citation_type == 'conferencepaper':
-        return 'conferencepaper'
-    else:
-        return None
+def map_citation_type(citation_type):
+    for key, values in type_mapping.items():
+            if citation_type in values:
+                return key
+    return None
 
 # Create a dictionary of transaction templates prepopulated with values from the user arguments and .csv file.
 # The .csv template uses custom field names.
@@ -25,7 +24,7 @@ def map_csv_type(citation_type):
 # Used by create_transaction_csv.
 def get_transaction_templates_csv(email, pickup, row):
     return {
-     'journalarticle': {
+     'JOUR': {
         'ExternalUserId': email,
         'RequestType': 'Article',
         'ProcessType': 'Borrowing',
@@ -40,7 +39,7 @@ def get_transaction_templates_csv(email, pickup, row):
         'DOI': row.get('DOI', ''),
         'ISSN': row.get('ISSN', '')
     },
-    'book': {
+    'BOOK': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
         'RequestType': 'Loan',
@@ -52,7 +51,7 @@ def get_transaction_templates_csv(email, pickup, row):
         'ISSN': row.get('ISBN', ''),
         'LoanPublisher': row.get('Publisher', ''),
     },
-    'booksection': {
+    'CHAP': {
         'ExternalUserId': email,
         'RequestType': 'Article',
         'ProcessType': 'Borrowing',
@@ -67,7 +66,7 @@ def get_transaction_templates_csv(email, pickup, row):
         'DOI': row.get('DOI', ''),
         'ISSN': row.get('ISBN', '')
     },
-        'thesis': {
+        'THES': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
         'RequestType': 'Loan',
@@ -79,7 +78,7 @@ def get_transaction_templates_csv(email, pickup, row):
         'ISSN': row.get('ISBN', ''),
         'LoanPublisher': row.get('Publisher', ''),
     },
-        'conferencepaper': {
+        'CONF': {
         'ExternalUserId': email,
         'RequestType': 'Article',
         'ProcessType': 'Borrowing',
@@ -95,19 +94,6 @@ def get_transaction_templates_csv(email, pickup, row):
         'ISSN': row.get('ISSN', '')
     },
 }
-
-# Map RIS citation types to types used by transaction templates.
-def map_ris_type(citation_type):
-    if citation_type == 'JOUR' or citation_type == 'EJOUR' or citation_type == 'MGZN' or citation_type == 'NEWS' or citation_type == 'ENCYC' or citation_type == 'CONF' or citation_type == 'CPAPER':
-        return 'JOUR'
-    elif citation_type == 'CHAP':
-        return 'CHAP'
-    elif citation_type == 'BOOK':
-        return 'BOOK'
-    elif citation_type == 'THES':
-        return 'THES'
-    else:
-        return None
 
 # Create a dictionary of transaction templates prepopulated with values from the user arguments and .ris file.
 # The .ris template uses a simplified set of RIS field names. Field names are mapped to the template keys using the map_rispy function.
@@ -161,6 +147,7 @@ def get_transaction_templates_ris(email, pickup, entry):
     },
     'THES': {
         'ExternalUserId': email,
+        'ItemInfo4': pickup,
         'RequestType': 'Loan',
         'ProcessType': 'Borrowing',
         'DocumentType': 'Thesis',
