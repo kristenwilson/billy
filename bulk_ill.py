@@ -9,7 +9,7 @@ from args import get_args
 # Custom modules
 from illiad_api_utils import check_user
 from validation_utils import validate_file, validate_file_type
-from transaction_utils import process_transaction_csv, process_transaction_ris
+from transaction_utils import process_transaction
 
 # Configuration
 from config import api_key, api_base
@@ -21,15 +21,12 @@ def main():
     # Validate that the file exists and store the full filepath.
     filepath = validate_file(filename)
     
-    # Identify the file type and verify that it contains a "type" field for each citation.
+    # Validate the filetype and user account.
     filetype = validate_file_type(filename, filepath)
     check_user(email, api_base, api_key)
     
-    # Process the file based on its type.
-    if filetype == 'ris':
-        process_transaction_ris(email, filename, filepath, pickup, test_mode)
-    elif filetype == 'csv':
-      process_transaction_csv(email, filename, filepath, pickup, test_mode)
+    # Process the file
+    process_transaction(filetype, email, filename, filepath, pickup, test_mode)
 
 
 if __name__ == '__main__':
