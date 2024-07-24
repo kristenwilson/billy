@@ -7,7 +7,7 @@
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 from illiad_api_utils import submit_transaction
 from validation_utils import validate_transaction
-from file_utils import open_csv, create_results_file
+from file_utils import open_csv, create_results_file, get_date_time, check_for_results_folder
 from rispy_utils import map_rispy
 
 # Configuration
@@ -45,14 +45,20 @@ def process_transaction_csv(email, filename, filepath, pickup, test_mode):
 
     # Open the file as a CSV reader object.    
     with open(filepath, 'r', encoding='utf-8') as source_file:
-        reader = open_csv(source_file)
+        citations = open_csv(source_file)
 
+        # Ensure the "results" folder exists.
+        check_for_results_folder()
+        
+        # Get the current date and time.
+        now = get_date_time()
+        
         # Create a new file for the results.
-        with open('results.csv', 'w', encoding= 'utf-8', newline='') as resultsfile:
-            writer = create_results_file(reader, resultsfile)
+        with open(f'results/{filename}_{now}.csv', 'w', encoding= 'utf-8', newline='') as resultsfile:
+            writer = create_results_file(citations, resultsfile)
             
             # Create and process a transaction for each row in the reader object.
-            for i, row in enumerate(reader, start=1):
+            for i, row in enumerate(citations, start=1):
 
                 # Initialize the result dictionary. 
                 result = {'Line number': i, 'Error': None, 'Transaction': None, 'Transaction number': None}
@@ -117,21 +123,27 @@ def process_transaction_ris(email, filename, filepath, pickup, test_mode):
     
     print('Processing transactions...\n')
 
-    # Store the entries from the .ris file in a list.
-    # Some entries will be mapped to a consistent set of keys used by the transaction templates.
-    entries = map_rispy(filepath)
+    # Store the citations from the .ris file in a list.
+    # Some citations will be mapped to a consistent set of keys used by the transaction templates.
+    citations = map_rispy(filepath)
+
+    # Get the current date and time.
+    now = get_date_time()
+
+    # Ensure the "results" folder exists.
+    check_for_results_folder()
 
     # Create a new file for the results.
-    with open('results.csv', 'w', encoding='utf-8', newline='') as resultsfile:
-        writer = create_results_file(entries, resultsfile)
+    with open(f'results/{filename}_{now}.csv', 'w', encoding='utf-8', newline='') as resultsfile:
+        writer = create_results_file(citations, resultsfile)
         
         # Create and process a transaction for each entry.
-        for i, entry in enumerate(entries, start=1):
+        for i, entry in enumerate(citations, start=1):
 
             # Initialize the result dictionary.
             result = {'Line number': i, 'Error': None, 'Transaction': None, 'Transaction number': None}
 
-            # TODO: Create a function to validate .ris entries.
+            # TODO: Create a function to validate .ris citations.
             
             # If there are no errors in the entry, create a transaction.
             citation_type = entry['type_of_reference']
