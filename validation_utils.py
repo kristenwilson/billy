@@ -70,9 +70,9 @@ def validate_transaction(transaction):
             
     # Check that the transaction contains all required fields.
     if transaction['RequestType'] == 'Article':
-        required_fields = ['ExternalUserId', 'RequestType', 'ProcessType', 'PhotoJournalTitle', 'PhotoArticleTitle', 'PhotoArticleAuthor', 'PhotoJournalYear']
+        required_fields = ['ExternalUserId', 'RequestType', 'ProcessType']
     if transaction['RequestType'] == 'Loan':
-        required_fields = ['ExternalUserId', 'ItemInfo4', 'RequestType', 'ProcessType', 'LoanTitle', 'LoanAuthor', 'LoanDate']
+        required_fields = ['ExternalUserId', 'ItemInfo4', 'RequestType', 'ProcessType']
     missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
     
     # Replaces 'ItemInfo4' with 'Pickup Location' in the error message for user clarity.
@@ -83,5 +83,4 @@ def validate_transaction(transaction):
     # Return an error if the transaction is missing any required fields.
     if missing_fields:
         error = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
-        #print(error)
         return error
