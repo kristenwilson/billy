@@ -28,6 +28,11 @@ def check_for_results_folder():
     if not os.path.exists('results'):
         os.makedirs('results')
 
+def construct_results_filepath(filename, now):
+    results_filename = f'results_{filename}_{now}.csv'
+    results_filepath = os.path.join('results', results_filename)
+    return results_filepath
+
 # Create a results file and write the header row.    
 def create_results_file(reader, resultsfile):
     writer = None
