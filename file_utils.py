@@ -20,7 +20,7 @@ def open_ris(source_file):
     
 # Get the current date and time to the nearnest second for use in filenames.
 def get_date_time():
-    now = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
     return now
 
 # Ensure the "results" folder exists
@@ -31,6 +31,7 @@ def check_for_results_folder():
 def construct_results_filepath(filename, now):
     results_filename = f'{filename}_{now}.csv'
     results_filepath = os.path.join('results', results_filename)
+    print(f'Results will be saved to {results_filepath}\n')
     return results_filepath
 
 # Create a results file and write the header row.    
