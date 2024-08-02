@@ -29,7 +29,7 @@ def check_for_results_folder():
         os.makedirs('results')
 
 def construct_results_filepath(filename, now):
-    results_filename = f'results_{filename}_{now}.csv'
+    results_filename = f'{filename}_{now}.csv'
     results_filepath = os.path.join('results', results_filename)
     return results_filepath
 
