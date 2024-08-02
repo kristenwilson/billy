@@ -7,7 +7,7 @@
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 from illiad_api_utils import submit_transaction
 from validation_utils import validate_transaction
-from file_utils import *
+from file_utils import open_csv, create_results_file, get_date_time, check_for_results_folder
 from rispy_utils import map_rispy
 
 # Configuration
@@ -60,20 +60,17 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
     # Ensure the "results" folder exists.
     check_for_results_folder()
 
-    # Construct the results file path.
-    results_filepath = construct_results_filepath(filename, now)
-    
     # Create a new file for the results.
-    with open(results_filepath, 'w', encoding='utf-8', newline='') as resultsfile:
+    with open(f'results/{filename}_{now}.csv', 'w', encoding='utf-8', newline='') as resultsfile:
         writer = create_results_file(citations, resultsfile)
         
-        # Process a transaction for each entry.
+        # Create and process a transaction for each entry.
         for i, entry in enumerate(citations, start=1):
 
             # Initialize the result dictionary.
             result = {'Line number': i, 'Error': None, 'Transaction': None, 'Transaction number': None}
             
-            # Create a transaction.
+            # If there are no errors in the entry, create a transaction.
             if filetype == 'ris':
                 citation_type = entry['type_of_reference']
             elif filetype == 'csv':
@@ -92,7 +89,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
                 print(f'Row {i}: ' + result['Error'] + '\n')
                 continue
             
-            # If in test mode, only append the transaction results to the results file.
+            # If in test mode, append the transaction results to the results file.
             if test_mode:
                 writer.writerow(result)
                 print(f'Row {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
