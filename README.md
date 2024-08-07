@@ -14,7 +14,7 @@ Use `config.py.template` to create `config.py`. Fill in the values for your ILLi
 
 ## Usage
 ```python
-python bulk_ill.py you@university.edu file.csv -p 'Pickup Location'
+python billy.py you@university.edu file.csv -p 'Pickup Location'
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
 
