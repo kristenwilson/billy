@@ -1,4 +1,4 @@
-# Bulk ILL Script
+# Billy - Bulk ILL, Y'all!
 ## Description
 A Python script that creates interlibrary loan (ILL) transactions from a file of citation data.
 
