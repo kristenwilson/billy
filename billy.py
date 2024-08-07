@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# bulk_ill.py
+# billy.py
+# Bulk ILL, Yall! (Billy)
 # Description: This script processes citations from a .csv or .ris file and creates interlibrary loan transactions in ILLiad for each citation.
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
