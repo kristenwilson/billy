@@ -67,3 +67,17 @@ This file format matches the default output from Zotero. If you are using a diff
 * Pages
 * ISBN
 
+### Thesis request fields
+* Title * 
+* Author *
+* Publication Year
+* Publisher
+
+### Conference paper request fields
+* Title * 
+* Author * 
+* Conference Name * 
+* Publication Year *
+* Publisher
+* Place
+
