@@ -16,10 +16,15 @@ from config import api_key, api_base
 def create_transaction(filetype, transaction_type, email, pickup, entry):
     
     # Returns a dictionary of transaction templates prepopulated with values from the user arguments.
+    # Also returns the title and author for use in the results file.
     if filetype == 'csv':
         transaction_templates = get_transaction_templates_csv(email, pickup, entry)
+        title = entry.get('Title', '')
+        author = entry.get('Author', '')
     elif filetype == 'ris':
         transaction_templates = get_transaction_templates_ris(email, pickup, entry)
+        title = entry.get('primary_title', '')
+        author = entry.get('authors', '')
 
     # Check if the transaction type is in the transaction_templates_ris dictionary.
     if transaction_type in transaction_templates:
@@ -27,12 +32,13 @@ def create_transaction(filetype, transaction_type, email, pickup, entry):
         # If the Type column contains a valid value, return a transaction using the appropriate template.
         # If the file contains a value for a field, use that value. If not, it will be set to ''.
         transaction = {k: entry.get(v, v) for k, v in transaction_templates[transaction_type].items()}
-        return transaction, None
+        error = 'No errors'
+        return transaction, None, title, author
 
-    # If the Type column contains an invalid value, return an error message and move to the next row.
+    # If the Type column contains an invalid value, return an error message and move to the next entry.
     else:
         error = f'The Type field contains an unsupported citation type.'
-        return None, error
+        return None, error, title, author
     
 def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
     
@@ -71,15 +77,23 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
         for i, entry in enumerate(citations, start=1):
 
             # Initialize the result dictionary.
-            result = {'Line number': i, 'Error': None, 'Transaction': None, 'Transaction number': None}
+            result = {
+                'Entry number': i, 
+                'Title': None, 
+                'Author': None, 
+                'Error': None, 
+                'Transaction': None, 
+                'Transaction number': None
+            }
             
             # Create a transaction.
             if filetype == 'ris':
                 citation_type = entry['type_of_reference']
+
             elif filetype == 'csv':
                 citation_type = str.lower(entry['Item Type'])
             transaction_type = map_citation_type(citation_type)
-            result['Transaction'], result['Error'] = create_transaction(filetype, transaction_type, email, pickup, entry)
+            result['Transaction'], result['Error'], result['Title'], result['Author'] = create_transaction(filetype, transaction_type, email, pickup, entry)
 
             # Validate the transaction.
             if not result['Error']:
@@ -89,16 +103,16 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
             # Transaction will not be submitted if there are errors.
             if result['Error']:
                 writer.writerow(result)
-                print(f'Row {i}: ' + result['Error'] + '\n')
+                print(f'Entry {i}: ' + result['Error'] + '\n')
                 continue
             
             # If in test mode, only append the transaction results to the results file.
             if test_mode:
                 writer.writerow(result)
-                print(f'Row {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
+                print(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
 
             # If not in test mode, submit the transaction and append the transaction results to the results file.
             if not test_mode:        
                 result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                 writer.writerow(result)
-                print(f'Row {i}: Created transaction number {result["Transaction number"]}' + '\n')        
+                print(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')        

@@ -38,7 +38,7 @@ def construct_results_filepath(filename, now):
 def create_results_file(reader, resultsfile):
     writer = None
     # Create a header row for the results file.
-    fieldnames = ['Line number', 'Error', 'Transaction', 'Transaction number']
+    fieldnames = ['Entry number', 'Title', 'Author', 'Error', 'Transaction', 'Transaction number']
     writer = csv.DictWriter(resultsfile, fieldnames=fieldnames)
     writer.writeheader()
     return writer
