@@ -5,7 +5,7 @@
 
 # Maps citation types the types used by transaction_templates.py.
 type_mapping = {
-        'JOUR': ['JOUR', 'EJOUR', 'MGZN', 'NEWS', 'ENCYC', 'CPAPER', 'GEN', 'ELEC', 'journalarticle', 'newspaperarticle', 'magazinearticle', 'encyclopediaarticle', 'webpage'],
+        'JOUR': ['JOUR', 'EJOUR', 'MGZN', 'NEWS', 'ENCYC', 'CPAPER', 'GEN', 'ELEC', 'SLIDE', 'journalarticle', 'newspaperarticle', 'magazinearticle', 'encyclopediaarticle', 'webpage,' 'slide'],
         'CHAP': ['CHAP', 'booksection'],
         'BOOK': ['BOOK', 'book'],
         'THES': ['THES', 'thesis'],
