@@ -3,13 +3,19 @@
 # Description: Templates to create ILLiad transactions; for use by bulk_ill.py.
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
-# Maps citation types the types used by transaction_templates.py.
+# Maps citation types from RIS and Zotero the types used by transaction_templates.py.
 type_mapping = {
-        'JOUR': ['JOUR', 'EJOUR', 'MGZN', 'NEWS', 'ENCYC', 'CPAPER', 'GEN', 'ELEC', 'SLIDE', 'journalarticle', 'newspaperarticle', 'magazinearticle', 'encyclopediaarticle', 'webpage,' 'slide'],
+        'JOUR': ['JOUR', 'EJOUR', 'journalarticle', 
+                 'MGZN', 'magazinearticle',
+                 'NEWS', 'newspaperarticle',
+                 'ENCYC', 'encyclopediaarticle',
+                 'GEN', 
+                 'ELEC', 'webpage',
+                 'SLIDE','slide'],
         'CHAP': ['CHAP', 'booksection'],
         'BOOK': ['BOOK', 'book'],
         'THES': ['THES', 'thesis'],
-        'CONF': ['CONF', 'conferencepaper']
+        'CONF': ['CONF', 'CPAPER',  'conferencepaper']
     }
 
 # Map citation types to types used by transaction templates.
@@ -19,10 +25,8 @@ def map_citation_type(citation_type):
                 return key
     return None
 
-# Create a dictionary of transaction templates prepopulated with values from the user arguments and .csv file.
-# The .csv template uses custom field names.
+# Create a transaction template prepopulated with values from the user arguments and .csv file.
 # If no value is provided, the field will be set to ''.
-# Used by create_transaction_csv.
 def get_transaction_templates_csv(email, pickup, row):
     return {
      'JOUR': {
@@ -96,10 +100,9 @@ def get_transaction_templates_csv(email, pickup, row):
     },
 }
 
-# Create a dictionary of transaction templates prepopulated with values from the user arguments and .ris file.
+# Create a transaction templates prepopulated with values from the user arguments and .ris file.
 # The .ris template uses a simplified set of RIS field names. Field names are mapped to the template keys using the map_rispy function.
 # If no value is provided, the field will be set to ''.
-# Used by create_transaction_ris.
 def get_transaction_templates_ris(email, pickup, entry):
     return {
         'JOUR': {
