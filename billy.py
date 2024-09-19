@@ -29,6 +29,8 @@ def main():
     # Process the file
     process_transaction(filetype, email, filename, filepath, pickup, test_mode)
 
+    print('\nProcessing complete.')
+
 
 if __name__ == '__main__':
     main()
