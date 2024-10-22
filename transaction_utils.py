@@ -13,16 +13,16 @@ from rispy_utils import map_rispy
 # Configuration
 from config import api_key, api_base
 
-def create_transaction(filetype, transaction_type, email, pickup, entry):
+def create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry):
     
     # Returns a dictionary of transaction templates prepopulated with values from the user arguments.
     # Also returns the title and author for use in the results file.
     if filetype == 'csv':
-        transaction_templates = get_transaction_templates_csv(email, pickup, entry)
+        transaction_templates = get_transaction_templates_csv(email, pickup, entry, illiad_request_type, illiad_doc_type)
         title = entry.get('Title', '')
         author = entry.get('Author', '')
     elif filetype == 'ris':
-        transaction_templates = get_transaction_templates_ris(email, pickup, entry)
+        transaction_templates = get_transaction_templates_ris(email, pickup, entry, illiad_request_type, illiad_doc_type)
         title = entry.get('primary_title', '')
         author = entry.get('authors', '')
 
@@ -92,8 +92,9 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
 
             elif filetype == 'csv':
                 citation_type = str.lower(entry['Item Type'])
-            transaction_type = map_citation_type(citation_type)
-            result['Transaction'], result['Error'], result['Title'], result['Author'] = create_transaction(filetype, transaction_type, email, pickup, entry)
+            
+            transaction_type, illiad_request_type, illiad_doc_type = map_citation_type(citation_type)
+            result['Transaction'], result['Error'], result['Title'], result['Author'] = create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry)
 
             # Validate the transaction.
             if not result['Error']:

@@ -69,10 +69,10 @@ def validate_file_type(filename, filepath):
 def validate_transaction(transaction):
             
     # Check that the transaction contains all required fields.
-    if transaction['RequestType'] == 'Article':
-        required_fields = ['ExternalUserId', 'RequestType', 'ProcessType']
     if transaction['RequestType'] == 'Loan':
         required_fields = ['ExternalUserId', 'ItemInfo4', 'RequestType', 'ProcessType']
+    else:
+        required_fields = ['ExternalUserId', 'RequestType', 'ProcessType']
     missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
     
     # Replaces 'ItemInfo4' with 'Pickup Location' in the error message for user clarity.

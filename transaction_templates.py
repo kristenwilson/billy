@@ -3,37 +3,33 @@
 # Description: Templates to create ILLiad transactions; for use by bulk_ill.py.
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
-# Maps citation types from RIS and Zotero the types used by transaction_templates.py.
-type_mapping = {
-        'JOUR': ['JOUR', 'EJOUR', 'journalarticle', 
-                 'MGZN', 'magazinearticle',
-                 'NEWS', 'newspaperarticle',
-                 'ENCYC', 'encyclopediaarticle',
-                 'GEN', 
-                 'ELEC', 'webpage',
-                 'SLIDE','slide'],
-        'CHAP': ['CHAP', 'booksection'],
-        'BOOK': ['BOOK', 'book'],
-        'THES': ['THES', 'thesis'],
-        'CONF': ['CONF', 'CPAPER',  'conferencepaper']
-    }
+import yaml
 
 # Map citation types to types used by transaction templates.
 def map_citation_type(citation_type):
-    for key, values in type_mapping.items():
-            if citation_type in values:
-                return key
-    return None
+    # Load the citation types from the YAML file
+    with open('citation_types.yaml', 'r') as file:
+        citation_types = yaml.safe_load(file)
+
+    for type in citation_types:
+        ris_types = str.lower(type.get('ris_type', ''))
+        zotero_types = str.lower(type.get ('zotero_type', ''))
+
+        if str.lower(citation_type) in ris_types or citation_type in zotero_types:
+            return type['transaction_template'], type['illiad_request_type'], type['illiad_doc_type']
+            
+    # Return None if no match is found
+    return None, None, None
 
 # Create a transaction template prepopulated with values from the user arguments and .csv file.
 # If no value is provided, the field will be set to ''.
-def get_transaction_templates_csv(email, pickup, row):
+def get_transaction_templates_csv(email, pickup, row, illiad_request_type, illiad_doc_type):
     return {
      'JOUR': {
         'ExternalUserId': email,
-        'RequestType': 'Article',
+        'RequestType': illiad_request_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Article',
+        'DocumentType': illiad_doc_type,
         'PhotoJournalTitle': row.get('Publication Title', ''),
         'PhotoArticleTitle': row.get('Title', ''),
         'PhotoArticleAuthor': row.get('Author', ''),
@@ -47,9 +43,9 @@ def get_transaction_templates_csv(email, pickup, row):
     'BOOK': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
-        'RequestType': 'Loan',
+        'RequestType': illiad_request_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Book',
+        'DocumentType': illiad_doc_type,
         'LoanTitle': row.get('Title', ''),
         'LoanAuthor': row.get('Author', ''),
         'LoanDate': row.get('Publication Year', ''),
@@ -58,9 +54,9 @@ def get_transaction_templates_csv(email, pickup, row):
     },
     'CHAP': {
         'ExternalUserId': email,
-        'RequestType': 'Article',
+        'RequestType': illiad_request_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Book Chapter',
+        'DocumentType': illiad_doc_type,
         'PhotoJournalTitle': row.get('Publication Title', ''),
         'PhotoArticleTitle': row.get('Title', ''),
         'PhotoArticleAuthor': row.get('Author', ''),
@@ -74,9 +70,9 @@ def get_transaction_templates_csv(email, pickup, row):
         'THES': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
-        'RequestType': 'Loan',
+        'RequestType': illiad_request_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Thesis',
+        'DocumentType': illiad_doc_type,
         'LoanTitle': row.get('Title', ''),
         'LoanAuthor': row.get('Author', ''),
         'LoanDate': row.get('Publication Year', ''),
@@ -85,9 +81,9 @@ def get_transaction_templates_csv(email, pickup, row):
     },
         'CONF': {
         'ExternalUserId': email,
-        'RequestType': 'Article',
+        'RequestType': illiad_request_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Article',
+        'DocumentType': illiad_doc_type,
         'PhotoJournalTitle': row.get('Conference Name', ''),
         'PhotoArticleTitle': row.get('Title', ''),
         'PhotoArticleAuthor': row.get('Author', ''),
@@ -103,12 +99,12 @@ def get_transaction_templates_csv(email, pickup, row):
 # Create a transaction templates prepopulated with values from the user arguments and .ris file.
 # The .ris template uses a simplified set of RIS field names. Field names are mapped to the template keys using the map_rispy function.
 # If no value is provided, the field will be set to ''.
-def get_transaction_templates_ris(email, pickup, entry):
+def get_transaction_templates_ris(email, pickup, entry, illiad_requst_type, illiad_doc_type):
     return {
         'JOUR': {
         'ExternalUserId': email,
-        'RequestType': 'Article',
-        'DocumentType': 'Article',
+        'RequestType': illiad_requst_type,
+        'DocumentType': illiad_doc_type,
         'ProcessType': 'Borrowing',
         'PhotoJournalTitle': entry.get('secondary_title', ''),
         'PhotoArticleTitle': entry.get('primary_title', ''),
@@ -124,8 +120,8 @@ def get_transaction_templates_ris(email, pickup, entry):
     },
      'CHAP': {
         'ExternalUserId': email,
-        'RequestType': 'Article',
-        'DocumentType': 'Book Chapter',
+        'RequestType': illiad_requst_type,
+        'DocumentType': illiad_doc_type,
         'ProcessType': 'Borrowing',
         'PhotoJournalTitle': entry.get('secondary_title', ''),
         'PhotoArticleTitle': entry.get('primary_title', ''),
@@ -142,9 +138,9 @@ def get_transaction_templates_ris(email, pickup, entry):
     'BOOK': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
-        'RequestType': 'Loan',
+        'RequestType': illiad_requst_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Book',
+        'DocumentType': illiad_doc_type,
         'LoanTitle': entry.get('primary_title', ''),
         'LoanAuthor': ', '.join(entry.get('authors', '')) if isinstance(entry.get('authors', ''), list) else entry.get('authors', ''),
         'LoanDate': entry.get('year', ''),
@@ -154,9 +150,9 @@ def get_transaction_templates_ris(email, pickup, entry):
     'THES': {
         'ExternalUserId': email,
         'ItemInfo4': pickup,
-        'RequestType': 'Loan',
+        'RequestType': illiad_requst_type,
         'ProcessType': 'Borrowing',
-        'DocumentType': 'Thesis',
+        'DocumentType': illiad_doc_type,
         'LoanTitle': entry.get('primary_title', ''),
         'LoanAuthor': ', '.join(entry.get('authors', '')) if isinstance(entry.get('authors', ''), list) else entry.get('authors', ''),
         'LoanDate': entry.get('year', ''),
@@ -164,8 +160,8 @@ def get_transaction_templates_ris(email, pickup, entry):
     },
     'CONF': {
         'ExternalUserId': email,
-        'RequestType': 'Article',
-        'DocumentType': 'Article',
+        'RequestType': illiad_requst_type,
+        'DocumentType': illiad_doc_type,
         'ProcessType': 'Borrowing',
         'PhotoJournalTitle': entry.get('secondary_title', ''),
         'PhotoArticleTitle': entry.get('primary_title', ''),

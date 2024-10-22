@@ -1,0 +1,378 @@
+- type: Abstract
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: ABST
+- type: Audiovisual material
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  ris_type: ADVS
+- type: Aggregated database
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: AGGR
+- type: Ancient text
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: ANCIENT
+- type: Artwork
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: ART
+  zotero_type: artwork
+- type: Audio Recording
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  zotero_type: audioRecording
+- type: Bill
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: BILL, UNBILL
+  zotero_type: bill
+- type: Blog
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: BLOG
+  zotero_type: blogPost
+- type: Book
+  illiad_request_type: Loan
+  illiad_doc_type: Book
+  transaction_template: BOOK
+  ris_type: BOOK
+  zotero_type: book
+- type: Book Chapter
+  illiad_request_type: Article
+  illiad_doc_type: Book Chapter
+  transaction_template: CHAP
+  ris_type: CHAP
+  zotero_type: bookSection
+- type: Legal case
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: CASE
+  zotero_type: case
+- type: Chart
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: CHART
+- type: Classical work
+  illiad_request_type: Loan
+  illiad_doc_type: Book
+  transaction_template: BOOK
+  ris_type: CLSWK
+- type: Computer program
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: COMP
+  zotero_type: computerProgram, software
+- type: Conference proceedings
+  illiad_request_type: Article
+  illiad_doc_type: Conference
+  transaction_template: CONF
+  ris_type: CONF
+- type: Conference Paper
+  illiad_request_type: Article
+  illiad_doc_type: Conference
+  transaction_template: CONF
+  zotero_type: conferencePaper
+- type: Conference paper
+  illiad_request_type: Article
+  illiad_doc_type: Conference
+  transaction_template: CONF
+  ris_type: CPAPER
+- type: Catalog
+  illiad_request_type: Loan
+  illiad_doc_type: Book
+  transaction_template: BOOK
+  ris_type: CTLG
+- type: Dataset
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: DATA
+  zotero_type: dataset
+- type: Database
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: DBASE
+- type: Dictionary
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: DICT
+  zotero_type: dictionaryEntry
+- type: Document
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: document
+- type: Email
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: e-mail
+- type: Electronic book
+  illiad_request_type: Article
+  illiad_doc_type: Book
+  transaction_template: JOUR
+  ris_type: EBOOK
+- type: Electronic book section
+  illiad_request_type: Article
+  illiad_doc_type: Book Chapter
+  transaction_template: JOUR
+  ris_type: ECHAP
+- type: Edited book
+  illiad_request_type: Loan
+  illiad_doc_type: Book
+  transaction_template: BOOK
+  ris_type: EDBOOK
+- type: Electronic article
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: EJOUR
+- type: Web page / electronic citation
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: ELEC
+- type: Encyclopedia
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: ENCYC
+  zotero_type: encyclopediaArticle
+- type: Equation
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: EQUA
+- type: Figure
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: FIGURE
+- type: Film
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  ris_type: MPCT
+  zotero_type: film
+- type: Forum post
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: forumPost
+- type: Generic
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: GEN, STD
+- type: Government document
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: GOVDOC
+- type: Grant
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: GRNT
+- type: Hearing
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: HEAR
+  zotero_type: hearing
+- type: Internet communication
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: ICOMM
+- type: In press article
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: INPR
+- type: Instant message
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: instantMessage
+- type: Interview
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: INTV
+  zotero_type: interview
+- type: Journal
+  illiad_request_type: Loan
+  illiad_doc_type: Book
+  transaction_template: BOOK
+  ris_type: JFULL
+- type: Journal article
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: JOUR
+  zotero_type: journalArticle
+- type: Legal rule (or regulation)
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: LEGAL
+- type: Letter
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: letter
+- type: Magazine article
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: MGZN
+  zotero_type: magazineArticle
+- type: Manuscript
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: MANSCPT
+  zotero_type: manuscript
+- type: Map
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: MAP
+  zotero_type: map
+- type: Online multimedia
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: MULTI
+- type: Music (score)
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  ris_type: MUSIC
+- type: Newspaper article
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: NEWS
+  zotero_type: newspaperArticle
+- type: Pamphlet
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: PAMP
+- type: Patent
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: PAT
+  zotero_type: patent
+- type: Personal communication
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: PCOMM
+- type: Podcast
+  illiad_request_type: Article
+  illiad_doc_type: Media
+  transaction_template: JOUR
+  ris_type: POD
+  zotero_type: podcast
+- type: Preprint
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: preprint
+- type: Presentation
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: presentation
+- type: Press release
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: PRESS
+- type: Radio broadcast
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  zotero_type: radioBroadcast
+- type: Report
+  illiad_request_type: Article
+  illiad_doc_type: Report
+  transaction_template: JOUR
+  ris_type: RPRT
+  zotero_type: report
+- type: Monographic serial
+  illiad_request_type: Loan
+  illiad_doc_type: Book
+  transaction_template: BOOK
+  ris_type: SER
+- type: Slide
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: SLIDE
+- type: Sound recording
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  ris_type: SOUND
+- type: Standard
+  illiad_request_type: Loan
+  illiad_doc_type: Standards
+  transaction_template: BOOK
+  ris_type: STAND
+  zotero_type: standard
+- type: Statute
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: STAT
+  zotero_type: statute
+- type: Thesis/dissertation
+  illiad_request_type: Article
+  illiad_doc_type: Thesis
+  transaction_template: THES
+  ris_type: THES
+  zotero_type: thesis
+- type: TV broadcast
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  zotero_type: tvBroadcast
+- type: Unpublished work
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: UNPB, UNPD
+- type: Video recording
+  illiad_request_type: Loan
+  illiad_doc_type: Media
+  transaction_template: BOOK
+  ris_type: VIDEO
+  zotero_type: videoRecording
+- type: Webpage
+  illiad_request_type: Article
+  illiad_doc_type: Article
+  transaction_template: JOUR
+  ris_type: WEB
+  zotero_type: webPage
+
+  
