@@ -8,7 +8,7 @@ import yaml
 # Map citation types to types used by transaction templates.
 def map_citation_type(citation_type):
     # Load the citation types from the YAML file
-    with open('citation_types.yaml', 'r') as file:
+    with open('citation_types.yaml', 'r', encoding='utf-8') as file:
         citation_types = yaml.safe_load(file)
 
     for type in citation_types:
