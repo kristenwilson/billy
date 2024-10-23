@@ -347,7 +347,7 @@
   ris_type: STAT
   zotero_type: statute
 - type: Thesis/dissertation
-  illiad_request_type: Article
+  illiad_request_type: Loan
   illiad_doc_type: Thesis
   transaction_template: THES
   ris_type: THES
