@@ -107,6 +107,10 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
                 print(f'Entry {i}: ' + result['Error'] + '\n')
                 continue
             
+            # If no errors at the end of the process, set the error message to 'No errors'.
+            if not result['Error']:
+                result['Error'] = 'No errors'
+
             # If in test mode, only append the transaction results to the results file.
             if test_mode:
                 writer.writerow(result)
