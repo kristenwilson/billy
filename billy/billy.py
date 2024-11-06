@@ -13,7 +13,7 @@ import requests
 import datetime
 
 # Custom modules
-from rispy_helpers import map_rispy
+from rispy_mapping import map_rispy
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 
 # Configuration
