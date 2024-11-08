@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # transaction_templates.py
-# Description: Templates to create ILLiad transactions; for use by bulk_ill.py.
+# Description: Templates to create ILLiad transactions
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
 import yaml

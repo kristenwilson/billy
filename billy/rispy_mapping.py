@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # rispy_utils.py
-# Description: Utilities to help with parsing RIS files using the rispy library, for use with the bulk_ill.py script.
+# Description: Utilities to help with parsing RIS files using the rispy library
 # Author: Kristen Wilson, NC State University Libraries, kmblake@ncsu.edu
 
 from copy import deepcopy
