@@ -4,7 +4,6 @@
 # Description: This script processes citations from a .csv or .ris file and creates interlibrary loan transactions in ILLiad for each citation.
 # Author: Kristen Wilson, NC State Libraries, kmblake@ncsu.edu
 
-# Python modules
 import argparse
 import os
 import sys
@@ -12,21 +11,19 @@ import csv
 import requests
 import datetime
 
-# Custom modules
 from rispy_mapping import map_rispy
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 
-# Configuration
 from config import api_key, api_base
      
 def get_args():
     
     # Identify required inputs via command line arguments.
-    parser = argparse.ArgumentParser(description='Create interlibrary loan transactions in ILLiad for articles in a csv file.')
+    parser = argparse.ArgumentParser(description='Create interlibrary loan transactions in ILLiad for articles in a CSV or RIS file.')
     parser.add_argument('email', 
                         help='The email address of the person who will receive the requested materials. This person must already have a user account in ILLiad.')
     parser.add_argument('filename', 
-                        help='The name of the file to be read. Must be a .csv file.')
+                        help='The name of the file to be read. Must be a .csv or .ris file.')
     parser.add_argument('-p', '--pickup', 
                         help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.',
                         choices=['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension'],
@@ -39,7 +36,7 @@ def get_args():
 
 def validate_file(filename):
 
-    # Get the filepath of the user's file.
+    # Construct the filepath of the user's file.
     script_dir = os.path.join(os.path.dirname(__file__), 'data_files')
     filepath = os.path.join(script_dir, filename)
 
@@ -56,6 +53,11 @@ def validate_file(filename):
         # Skip blank lines at the beginning of the file.
         while not first_line:
             first_line = file.readline().strip()
+            if not first_line:
+                # Check if the file is empty
+                if file.tell() == 0:
+                    print('Error: The file is empty.')
+                    sys.exit()
         
         # If the first line of the file is a RIS 'type' tag, the file is treated as an RIS file.
         if first_line.__contains__('TY  -'):
@@ -140,7 +142,6 @@ def create_transaction(filetype, transaction_type, illiad_request_type, illiad_d
         # If the Type column contains a valid value, return a transaction using the appropriate template.
         # If the file contains a value for a field, use that value. If not, it will be set to ''.
         transaction = {k: entry.get(v, v) for k, v in transaction_templates[transaction_type].items()}
-        error = 'No errors'
         return transaction, None, title, author
 
     # If the Type column contains an invalid value, return an error message and move to the next entry.
@@ -179,7 +180,8 @@ def submit_transaction(transaction, api_base, api_key, i):
         
         # If the request is successful, return the transaction number.
         if response.status_code == 200:
-            return response.json()['TransactionNumber'], None
+            error = 'No errors'
+            return response.json()['TransactionNumber'], error
 
         # If the request is not successful, return an error message.
         else:
@@ -197,15 +199,6 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
         print('Running in test mode. Transactions will be included in the results file but not submitted.\n')
     
     print('Processing transactions...\n')
-
-    # Store the citations from the file in a list.
-    # RIS citations will be mapped to a consistent set of keys used by the transaction templates.
-    if filetype == 'ris':
-        citations = map_rispy(filepath)
-    elif filetype == 'csv':
-        with open(filepath, 'r', encoding='utf-8') as source_file:
-            citations = csv.DictReader(source_file)
-            citations = list(citations)
 
     # Get the current date and time to the nearest second for use in filename
     now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
@@ -237,17 +230,28 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
         'Transaction number': None
         }
 
+        # Store the citations from the file in a list.
+        # RIS citations will be mapped to a consistent set of keys used by the transaction templates.
+        if filetype == 'ris':
+            citations = map_rispy(filepath)
+        elif filetype == 'csv':
+            with open(filepath, 'r', encoding='utf-8') as source_file:
+                citations = csv.DictReader(source_file)
+                citations = list(citations)
+
         # Process a transaction for each entry.
         for i, entry in enumerate(citations, start=1):
         
-            # Create a transaction.
+            # Get the citation type from the source file.
             if filetype == 'ris':
                 citation_type = entry['type_of_reference']
             elif filetype == 'csv':
                 citation_type = str.lower(entry['Item Type'])
             
+            # Map the transaction type from the input file to the standardized values.
             transaction_type, illiad_request_type, illiad_doc_type = map_citation_type(citation_type)
 
+            # Create the transaction based on the transaction type.
             result['Transaction'], result['Error'], result['Title'], result['Author'] = create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry)
 
             # Validate the transaction.
@@ -265,16 +269,17 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
             if not result['Error']:
                 result['Error'] = 'No errors'
 
-            # If in test mode, only append the transaction results to the results file.
-            if test_mode:
-                writer.writerow(result)
-                print(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
+                # If in test mode, only append the transaction results to the results file.
+                if test_mode:
+                    result['Transaction number'] = 'n/a'
+                    writer.writerow(result)
+                    print(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
 
-            # If not in test mode, submit the transaction and append the transaction results to the results file.
-            if not test_mode:        
-                result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
-                writer.writerow(result)
-                print(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')      
+                # If not in test mode, submit the transaction and append the transaction results to the results file.
+                if not test_mode:        
+                    result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
+                    writer.writerow(result)
+                    print(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')      
         
 def main():
     # Get command line arguments
