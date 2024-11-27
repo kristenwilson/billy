@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transaction Form</title>
+</head>
+<body>
+    <h1>Enter Transaction Details</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li class='{{ catetory }}'>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <form action="/submit" method="post">
+        <label for="email">Email address:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="pickup">Pickup location:</label>
+        <select id="pickup" name="pickup" required>
+            <option value="Hill">D.H. Hill Library</option>
+            <option value="Hunt">James B. Hunt Jr. Library</option>
+            </select>
+            <br><br>
+        
+        <label for="filename">Filename:</label>
+        <input type="file" id="filename" name="filename" required><br><br>
+    
+        <label for="test_mode">Run in test mode:</label>
+        <input type="checkbox" id="test_mode" name="test_mode" required><br><br>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

@@ -281,16 +281,24 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
                     writer.writerow(result)
                     print(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')      
         
-def main():
-    # Get command line arguments
-    email, filename, pickup, test_mode = get_args()
+def main(email=None, filename=None, pickup=None, test_mode=None):
+    class BillyError(Exception):
+        pass
     
-    # Validate that the file and user.
-    filepath, filetype = validate_file(filename)
-    check_user(email, api_base, api_key)
-    
-    # Process the file
-    process_transaction(filetype, email, filename, filepath, pickup, test_mode)
+    try:
+        if email is None or filename is None or pickup is None or test_mode is None:
+            # Get command line arguments
+            email, filename, pickup, test_mode = get_args()
+        
+        # Validate that the file and user.
+        filepath, filetype = validate_file(filename)
+        check_user(email, api_base, api_key)
+        
+        # Process the file
+        process_transaction(filetype, email, filename, filepath, pickup, test_mode)
+    except Exception as e:
+        raise BillyError(str(e))
+    pass
 
     print('\nProcessing complete.')
 
