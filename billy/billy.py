@@ -10,12 +10,25 @@ import sys
 import csv
 import requests
 import datetime
+import logging
 
 from rispy_mapping import map_rispy
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 
 from config import api_key, api_base
-     
+
+class BillyError(Exception):
+    pass
+
+# Configure logging to output to a file
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("billy.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)     
 def get_args():
     
     # Identify required inputs via command line arguments.
@@ -32,18 +45,19 @@ def get_args():
                         help='Run the script in test mode to output a report showing which transactions will be created and which will produce errors.')
     args = parser.parse_args()    
     
+    logging.info(f'Arguments: email={args.email}, filename={args.filename}, pickup={args.pickup}, test_mode={args.test}')
     return args.email, args.filename, args.pickup, args.test
 
-def validate_file(filename):
+def validate_file(filename, messages):
 
     # Construct the filepath of the user's file.
     script_dir = os.path.join(os.path.dirname(__file__), 'data_files')
     filepath = os.path.join(script_dir, filename)
 
-    # If the file doesn't exist, exit the script.
+    # If the file doesn't exist, raise an error.
     if not os.path.isfile(filepath):
-        print('Error: The file ' + filepath + ' does not exist.\n')
-        sys.exit()
+        error_message = ('Error: The file ' + filepath + ' does not exist.\n')
+        raise BillyError(error_message)
 
     # Verify that the file is either a RIS or CSV file.
     filetype = None    
@@ -56,13 +70,13 @@ def validate_file(filename):
             if not first_line:
                 # Check if the file is empty
                 if file.tell() == 0:
-                    print('Error: The file is empty.')
-                    sys.exit()
+                    error_message = 'Error: The file is empty.'
+                    raise BillyError(error_message)
         
         # If the first line of the file is a RIS 'type' tag, the file is treated as an RIS file.
         if first_line.__contains__('TY  -'):
             filetype = 'ris'
-            print('\nRIS file confirmed.')
+            messages.append('RIS file confirmed.')
         
         # If there is a comma in the first line, the file is treated as a CSV file.
         elif ',' in first_line:        
@@ -72,56 +86,57 @@ def validate_file(filename):
                     
                     # Check that the file contains an 'Item Type' column and if not, exit the script.
                     if 'Item Type' not in reader.fieldnames:
-                        print('Error: The file must contain a column called "Item Type".\n')
-                        sys.exit()
-
-                    filetype = 'csv'
-                    print('\nCSV file confirmed.')
+                        error_message = 'Error: The file must contain a column called "Item Type".\n'
+                        raise BillyError(error_message)
+                    
+                    else:
+                        filetype = 'csv'
+                        messages.append('\nCSV file confirmed.')
             
             # If the file is not a valid CSV file, exit the script.
             except csv.Error:
-                print('Error: The file ' + filepath + ' is not a valid CSV file.\n')
-                sys.exit()
+                error_message = ('Error: The file ' + filepath + ' is not a valid CSV file.\n')
+                raise BillyError(error_message)
             
         # If the file is not a valid RIS or CSV file, exit the script.
         else:
-            print('Error: The file ' + filename + ' is not a valid file type. The file must be a CSV or RIS file.\n')
-            sys.exit()
+            error_message = 'Error: The file ' + filename + ' is not a valid file type. The file must be a CSV or RIS file.\n'
+            raise BillyError(error_message)
 
-        return filepath, filetype
+        return filepath, filetype, messages
     
-def check_user(email, api_base, api_key):
+def check_user(email, api_base, api_key, messages):
 
-    try: 
-        # Define the API URL and headers.
-        api_url = api_base + '/Users/ExternalUserID/' + email
-        headers = {'ContentType': 'application/json', 'ApiKey': api_key}
+    # Define the API URL and headers.
+    api_url = api_base + '/Users/ExternalUserID/' + email
+    headers = {'ContentType': 'application/json', 'ApiKey': api_key}
 
+    try:
         # Make the API request.
         response = requests.get(api_url, headers=headers)
         
         if response.status_code == 200:
             # If the user has a "Cleared" status of "Yes", the user is valid.
             if response.json()['Cleared'] == 'Yes':
-                print('\nUser ' + email + ' confirmed.\n')
+                messages.append('\nUser ' + email + ' confirmed.\n')
+                return messages
             # If the user has a "Cleared" status of "No", the user is not valid.
             elif response.json()['Cleared'] == 'No': 
-                print('\nUser ' + email + ' is not cleared to place requests.\n')
-                sys.exit()
-        # If the user is not found, the user is not valid.
+                error_message = '\nUser ' + email + ' is not cleared to place requests.\n'
+                raise BillyError(error_message)
+        
+        # Raise an error if the API key is not valid.
         elif response.status_code == 401:
-            print('Invalid API key. Please check the API credentials in config.py.\n')
-            sys.exit()
+            error_message = 'Error: Invalid API key. Please check the API credentials in config.py.\n'
+            raise BillyError(error_message)
         
         # Print any other errors.
         else:
-            print(str(response.status_code) + ': ' + response.json()['Message'] + '\n')
-            sys.exit()
-    
-    # Print any errors related to the API request.
+            error_message = str(response.status_code) + ' Error: ' + response.json()['Message'] + '\n'
+            raise BillyError(error_message)
+        
     except Exception as e:
-        print(e)
-        sys.exit()
+        raise BillyError(e)
 
 def create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry):
     
@@ -193,13 +208,11 @@ def submit_transaction(transaction, api_base, api_key, i):
         error = (f'Error on line {i}: ' + str(e) + '\n')
         return None, error
 
-def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
+def process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages):
     # Display a message if the program is running in test mode.
     if test_mode:
-        print('Running in test mode. Transactions will be included in the results file but not submitted.\n')
+        messages.append('Running in test mode. Transactions will be included in the results file but not submitted.\n')
     
-    print('Processing transactions...\n')
-
     # Get the current date and time to the nearest second for use in filename
     now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 
@@ -210,7 +223,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
     # Construct the filepath for the results file
     results_filename = f'{filename}_{now}.csv'
     results_filepath = os.path.join('results', results_filename)
-    print(f'Results will be saved to {results_filepath}\n')
+    messages.append(f'Results saved to {results_filepath}\n')
 
     # Create a new file for the results.
     with open(results_filepath, 'w', encoding='utf-8', newline='') as resultsfile:
@@ -262,7 +275,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
             # Transaction will not be submitted if there are errors.
             if result['Error']:
                 writer.writerow(result)
-                print(f'Entry {i}: ' + result['Error'] + '\n')
+                messages.append(f'Entry {i}: ' + result['Error'] + '\n')
                 continue
             
             # If no errors at the end of the process, set the error message to 'No errors'.
@@ -273,17 +286,19 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode):
                 if test_mode:
                     result['Transaction number'] = 'n/a'
                     writer.writerow(result)
-                    print(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
+                    messages.append(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
 
                 # If not in test mode, submit the transaction and append the transaction results to the results file.
                 if not test_mode:        
                     result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                     writer.writerow(result)
-                    print(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')      
+                    messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')      
         
 def main(email=None, filename=None, pickup=None, test_mode=None):
-    class BillyError(Exception):
-        pass
+    
+    messages = []
+    
+    logging.info('Transaction initiated')
     
     try:
         if email is None or filename is None or pickup is None or test_mode is None:
@@ -291,16 +306,25 @@ def main(email=None, filename=None, pickup=None, test_mode=None):
             email, filename, pickup, test_mode = get_args()
         
         # Validate that the file and user.
-        filepath, filetype = validate_file(filename)
-        check_user(email, api_base, api_key)
+        filepath, filetype, messages = validate_file(filename, messages)
+        messages = check_user(email, api_base, api_key, messages)
         
         # Process the file
-        process_transaction(filetype, email, filename, filepath, pickup, test_mode)
-    except Exception as e:
-        raise BillyError(str(e))
-    pass
+        process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages)
+    
+    except BillyError as e:
+        messages.append(str(e))
+        logging.error(str(e))
 
-    print('\nProcessing complete.')
+    except Exception as e:
+        messages.append(f'Unexpected error: {str(e)}')
+        logging.error(f'Unexpected error: {str(e)}')
+
+    for message in messages:
+        print(message)
+
+    if any('Error' for message in messages):
+        sys.exit()
 
 if __name__ == '__main__':
     main()
