@@ -26,7 +26,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("billy.log"),
-        logging.StreamHandler(sys.stdout)
     ]
 )     
 def get_args():
@@ -161,8 +160,8 @@ def create_transaction(filetype, transaction_type, illiad_request_type, illiad_d
 
     # If the Type column contains an invalid value, return an error message and move to the next entry.
     else:
-        error = f'The Type field contains an unsupported citation type.'
-        return None, error, title, author
+        error_message = f'The Type field contains an unsupported citation type.'
+        return None, error_message, title, author
 
 def validate_transaction(transaction):
             
@@ -180,8 +179,8 @@ def validate_transaction(transaction):
     
     # Return an error if the transaction is missing any required fields.
     if missing_fields:
-        error = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
-        return error
+        error_message = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
+        return error_message
 
 def submit_transaction(transaction, api_base, api_key, i):
     
@@ -267,9 +266,13 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
             # Create the transaction based on the transaction type.
             result['Transaction'], result['Error'], result['Title'], result['Author'] = create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry)
 
+            logging.info(f"Transaction: {result['Transaction']}")
+
             # Validate the transaction.
             if not result['Error']:
                 result['Error'] = validate_transaction(result['Transaction'])
+
+            logging.info(f"Errors: {result['Error']}")
             
             # If there are any errors, write them to the results file.
             # Transaction will not be submitted if there are errors.
@@ -287,18 +290,19 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
                     result['Transaction number'] = 'n/a'
                     writer.writerow(result)
                     messages.append(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
+                    logging.info(f"Transaction submitted: {result['Transaction number']}")
 
                 # If not in test mode, submit the transaction and append the transaction results to the results file.
                 if not test_mode:        
                     result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                     writer.writerow(result)
-                    messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')      
-        
+                    messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')
+
 def main(email=None, filename=None, pickup=None, test_mode=None):
     
     messages = []
     
-    logging.info('Transaction initiated')
+    logging.info('Processing initiated')
     
     try:
         if email is None or filename is None or pickup is None or test_mode is None:
