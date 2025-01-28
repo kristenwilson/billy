@@ -150,7 +150,7 @@ def create_transaction(filetype, transaction_type, illiad_request_type, illiad_d
         title = entry.get('primary_title', '')
         author = entry.get('authors', '')
 
-    # Check if the transaction type is in the transaction_templates_ris dictionary.
+    # Check if the transaction type is in the transaction_templates dictionary.
     if transaction_type in transaction_templates:
 
         # If the Type column contains a valid value, return a transaction using the appropriate template.
@@ -305,11 +305,11 @@ def main(email=None, filename=None, pickup=None, test_mode=None):
     logging.info('Processing initiated')
     
     try:
+        # Get command line arguments
         if email is None or filename is None or pickup is None or test_mode is None:
-            # Get command line arguments
             email, filename, pickup, test_mode = get_args()
         
-        # Validate that the file and user.
+        # Validate the file and user.
         filepath, filetype, messages = validate_file(filename, messages)
         messages = check_user(email, api_base, api_key, messages)
         
