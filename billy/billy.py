@@ -131,7 +131,7 @@ def check_user(email, api_base, api_key, messages):
         
         # Print any other errors.
         else:
-            error_message = str(response.status_code) + ' Error: ' + response.json()['Message'] + '\n'
+            error_message = ' Error: ' + response.json()['Message'] + '\n'
             raise BillyError(error_message)
         
     except Exception as e:
