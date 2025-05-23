@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billy - Bulk ILL</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center">Welcome to Billy</h1>
+        <h2 class="text-center">Upload transactions</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class='{{ catetory }}'>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <form action="/submit" method="post" class="mt-4">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" id="email" name="email" class="form-control" value="{{ email }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="filename" class="form-label">Filename:</label>
+                <input type="file" id="filename" name="filename" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="pickup" class="form-label">Pickup Location:</label>
+                <select id="pickup" name="pickup" class="form-select" required>
+                    <option value="Hill">D.H. Hill Library</option>
+                    <option value="Hunt">James B. Hunt Jr. Library</option>
+                </select>
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" id="test_mode" name="test_mode" class="form-check-input">
+                <label for="test_mode" class="form-check-label">Run in test mode</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
