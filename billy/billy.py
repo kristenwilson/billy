@@ -112,7 +112,7 @@ def validate_file(filename, messages):
             logging.error(error_message)
             raise BillyError(error_message)
 
-        return filepath, filetype, messages
+        return filepath, filetype
     
 def check_user(email, api_base, api_key, messages):
 
@@ -330,7 +330,7 @@ def main(email=None, filename=None, pickup=None, test_mode=None):
             email, filename, pickup, test_mode = get_args()
         
         # Validate the file and user.
-        filepath, filetype, messages = validate_file(filename, messages)
+        filepath, filetype = validate_file(filename, messages)
         check_user(email, api_base, api_key, messages)
         
         # Process the file
