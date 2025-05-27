@@ -79,7 +79,7 @@ def validate_file(filename, messages):
         if first_line.__contains__('TY  -'):
             filetype = 'ris'
             success_message = 'RIS file confirmed.'
-            messages.append(success_message)
+            #messages.append(('success', success_message))
             logging.info(success_message)
         
         # If there is a comma in the first line, the file is treated as a CSV file.
@@ -97,7 +97,7 @@ def validate_file(filename, messages):
                     else:
                         filetype = 'csv'
                         success_message = 'CSV file confirmed.'
-                        messages.append(success_message)
+                        #messages.append(('success', success_message))
                         logging.info(success_message)
             
             # If the file is not a valid CSV file, raise an error.
@@ -128,7 +128,7 @@ def check_user(email, api_base, api_key, messages):
             # If the user has a "Cleared" status of "Yes", the user is valid.
             if response.json()['Cleared'] == 'Yes':
                 success_message = 'User ' + email + ' confirmed.'
-                messages.append(success_message)
+                #messages.append(('success', success_message))
                 logging.info(success_message)
                 return messages
             # If the user has a "Cleared" status of "No", the user is not valid.
@@ -227,7 +227,7 @@ def submit_transaction(transaction, api_base, api_key, i):
 def process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages):
     # Display a message if the program is running in test mode.
     if test_mode:
-        messages.append('Running in test mode. Transactions will be included in the results file but not submitted.')
+        messages.append(('info', 'Running in test mode. Transactions will be included in the results file but not submitted.'))
     
     # Get the current date and time to the nearest second for use in filename
     now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
@@ -239,9 +239,9 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
     # Construct the filepath for the results file
     results_filename = f'{filename}_{now}.csv'
     results_filepath = os.path.join('results', results_filename)
-    success_message = f'Results saved to {results_filepath}'
-    messages.append(success_message)
-    logging.info(success_message)
+    info_message = f'Results saved to {results_filepath}'
+    messages.append(('info', info_message))
+    logging.info(info_message)
 
     # Create a new file for the results.
     with open(results_filepath, 'w', encoding='utf-8', newline='') as resultsfile:
@@ -293,8 +293,8 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
             # Transaction will not be submitted if there are errors.
             if result['Error']:
                 writer.writerow(result)
-                error_message = f"Transaction {i} - {result['Title']}: {result['Error']}"
-                messages.append(error_message)
+                error_message = f"Entry {i}: {result['Title']}: {result['Error']}"
+                messages.append(('error', error_message))
                 logging.info(error_message)
                 continue
             
@@ -307,7 +307,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
                     result['Transaction number'] = 'n/a'
                     writer.writerow(result)
                     success_message = f'Entry {i}: Created the following transaction data: ' + str(result['Transaction'])
-                    messages.append(success_message)
+                    messages.append(('success', success_message))
                     logging.info(success_message)
 
                 # If not in test mode, submit the transaction and append the transaction results to the results file.
@@ -315,7 +315,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
                     result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                     writer.writerow(result)
                     success_message = f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n'
-                    messages.append(success_message)
+                    messages.append(('success', success_message))
                     logging.info(success_message)
 
 def main(email=None, filename=None, pickup=None, test_mode=None):
@@ -337,11 +337,12 @@ def main(email=None, filename=None, pickup=None, test_mode=None):
         process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages)
 
     except Exception as e:
-        messages.append(f'Error: {str(e)}')
-        logging.error(f'Error: {str(e)}')
+        messages.append(('error', f'Error: {str(e)}'))
+        logging.error(('error', f'Error: {str(e)}'))
 
-    for message in messages:
-        print(message + '\n')
+    for category, message in messages:
+        print(f'{category.upper()} {message}\n')
+
     return messages
 
 if __name__ == '__main__':

@@ -11,8 +11,11 @@
     <div class="container mt-5">
         <h1 class="text-center">Results</h1>
         <ul class="list-group mt-4">
-            {% for message in messages %}
-                <li class="list-group-item">{{ message }}</li>
+            {% for category, message in messages %}
+                <li class="list-group-item 
+                    {% if category == 'success' %}list-group-item-success{% elif category == 'error' %}list-group-item-danger{% else %}list-group-item-info{% endif %}">
+                    {{ message }}
+                </li>
             {% endfor %}
         </ul>
         <div class="text-center mt-4">
