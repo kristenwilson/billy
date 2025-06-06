@@ -12,14 +12,14 @@
         <h1 class="text-center">Results</h1>
         <ul class="list-group mt-4">
             {% for category, message in messages %}
-                <li class="list-group-item 
+                <li class="list-group-item mb-3
                     {% if category == 'success' %}list-group-item-success{% elif category == 'error' %}list-group-item-danger{% else %}list-group-item-info{% endif %}">
                     {{ message }}
                 </li>
             {% endfor %}
         </ul>
         <div class="text-center mt-4">
-            <a href="{{ url_for('index', email=email) }}" class="btn btn-secondary">Submit another file</a>
+            <a href="{{ url_for('index', email=email) }}" class="btn btn-primary">Submit another file</a>
         </div>
     </div>
     <!-- Bootstrap JS -->

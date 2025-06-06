@@ -11,6 +11,7 @@ import csv
 import requests
 import datetime
 import logging
+import json
 
 from rispy_mapping import map_rispy
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
@@ -293,7 +294,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
             # Transaction will not be submitted if there are errors.
             if result['Error']:
                 writer.writerow(result)
-                error_message = f"Entry {i}: {result['Title']}: {result['Error']}"
+                error_message = f"Entry {i}: {result['Error']} ({result['Title']})"
                 messages.append(('error', error_message))
                 logging.info(error_message)
                 continue
