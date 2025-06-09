@@ -234,14 +234,14 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
     now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 
     # Ensure the "results" folder exists
-    if not os.path.exists('results'):
-        os.makedirs('results')
+    if not os.path.exists('static/results'):
+        os.makedirs('static/results')
 
     # Construct the filepath for the results file
     results_filename = f'{filename}_{now}.csv'
-    results_filepath = os.path.join('results', results_filename)
+    results_filepath = os.path.join('static/results', results_filename)
     info_message = f'Results saved to {results_filepath}'
-    messages.append(('info', info_message))
+    #messages.append(('info', info_message))
     logging.info(info_message)
 
     # Create a new file for the results.
@@ -318,6 +318,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
                     success_message = f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n'
                     messages.append(('success', success_message))
                     logging.info(success_message)
+    return results_filename
 
 def main(email=None, filename=None, pickup=None, test_mode=None):
     
@@ -335,7 +336,7 @@ def main(email=None, filename=None, pickup=None, test_mode=None):
         check_user(email, api_base, api_key, messages)
         
         # Process the file
-        process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages)
+        results_filename = process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages)
 
     except Exception as e:
         messages.append(('error', f'Error: {str(e)}'))
@@ -344,7 +345,7 @@ def main(email=None, filename=None, pickup=None, test_mode=None):
     for category, message in messages:
         print(f'{category.upper()} {message}\n')
 
-    return messages
+    return messages, results_filename
 
 if __name__ == '__main__':
     main()

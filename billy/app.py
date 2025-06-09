@@ -29,9 +29,10 @@ def submit():
     
     try:
         # Call the modified main function from billy.py and get messages
-        messages = billy.main(email, filename, pickup, test_mode)
+        messages, results_filename = billy.main(email, filename, pickup, test_mode)
         session['messages'] = messages  # Store messages in session for later use
         session['email'] = email  # Store email in session
+        session['results_filename'] = results_filename  # Store results filename in session
         logging.info('Processing complete.')
     except billy.BillyError as e:
         flash(f'Error: {str(e)}', 'danger')
@@ -52,9 +53,10 @@ def results():
     # Retrieve messages and email from session
     messages = session.get('messages', [])
     email = session.get('email', '')
+    results_filename = session.get('results_filename', '')
     # Clear messages from session after displaying
     session.pop('messages', None)
-    return render_template('results.html', messages=messages, email=email)
+    return render_template('results.html', messages=messages, email=email, results_filename=results_filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -12,7 +12,7 @@
         <h1 class="text-center">Results</h1>
         <ul class="list-group mt-4">
             {% for category, message in messages %}
-                <li class="list-group-item mb-3
+                <li class="list-group-item
                     {% if category == 'success' %}list-group-item-success{% elif category == 'error' %}list-group-item-danger{% else %}list-group-item-info{% endif %}">
                     {{ message }}
                 </li>
@@ -20,6 +20,9 @@
         </ul>
         <div class="text-center mt-4">
             <a href="{{ url_for('index', email=email) }}" class="btn btn-primary">Submit another file</a>
+            &nbsp;
+            <a href="{{ url_for('static', filename='results/' ~ results_filename) }}" class="btn btn-secondary">Download your results</a>
+
         </div>
     </div>
     <!-- Bootstrap JS -->
