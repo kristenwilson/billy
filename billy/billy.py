@@ -15,7 +15,7 @@ import logging
 from rispy_mapping import map_rispy
 from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
 
-from config import api_key, api_base
+from config import api_key, api_base, pickup_locations
 
 class BillyError(Exception):
     pass
@@ -38,7 +38,7 @@ def get_args():
                         help='The name of the file to be read. Must be a .csv or .ris file.')
     parser.add_argument('-p', '--pickup', 
                         help='The library where the requested materials will be picked up. This is only needed if you are requesting physical materials.',
-                        choices=['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension'],
+                        choices=pickup_locations,
                         default='')
     parser.add_argument('-t', '--test', action='store_true',
                         help='Run the script in test mode to output a report showing which transactions will be created and which will produce errors.')

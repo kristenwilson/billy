@@ -1,2 +1,3 @@
 api_base = '...'
 api_key = '...'
+pickup_locations = ['locationA', 'locationB', 'locationC']
