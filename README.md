@@ -12,21 +12,16 @@ To connect to the ILLiad API, ask your ILLiad administrator to create an API key
 ### Config
 Use `config.py.template` to create `config.py`. Fill in the values for your ILLiad API base URL and key.
 
+
+You can also enter the names of your pickup locations as they appear in ILLIad, for example: 
+
+```pickup_locations = ['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension']```
+
 ## Usage
 ```python
 python billy.py you@university.edu file.csv -p 'Pickup Location'
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
-
-Valid pickup locations include:
-* 'Hill'
-* 'Hunt'
-* 'Design'
-* 'Natural Resources'
-* 'Veterinary Medicine'
-* 'Textiles'
-* 'METRC'
-* 'Distance/Extension'
 
 ## RIS files
 RIS is a format for citation data used by many major databases and library applications. Place any RIS files you want to process in the 'data_files' folder. Properly formatted RIS files should be processed without any additional intervention.
