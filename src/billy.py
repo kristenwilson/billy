@@ -19,6 +19,7 @@ from config import api_key, api_base, pickup_locations
 from file_utils import validate_file, read_csv
 from api import check_user, submit_transaction
 from transaction import create_transaction, validate_transaction
+from exceptions import BillyError
 
 # Configure logging to output to a file
 logging.basicConfig(
