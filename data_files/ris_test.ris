@@ -1,0 +1,100 @@
+TY  - JOUR
+TI  - “Bharat Singh’s Stuffed Otter”: discovery in 1818 of Ailurus fulgens, the Himalayan red panda
+AU  - Watson, Mark F.
+T2  - Archives of natural history
+AB  - Thomas Hardwicke’s use of a Nepali vernacular name “Wah” for Ailurus fulgens (red panda, also known as the lesser panda or red bear-cat) in his 1821 report to the Linnean Society of London, and its eventual publication in 1827, has enabled a connection to be made between a mysterious “stuffed otter” found in a Kathmandu bazaar in 1818 and an illustration from Hardwicke’s natural history collection held at the Linnean Society of London. The “stuffed otter” was referred to in letters from Edward Gardner of the British Residency in Kathmandu to Nathaniel Wallich in the Calcutta Botanic Garden. These reveal the seminal role played by Bharat Singh in the realization that this animal was unusual and in his procuring further specimens and ecological information about it from traders in Nepal. Singh was one of Wallich’s plant collectors stationed in Kathmandu and was probably also the source of red panda specimens sent to Paris by Alfred Duvaucel. Duvuacel’s specimens were used by Frédéric Cuvier as the basis of the first scientific description of the species in 1825, which predated that of Hardwicke by two years. The importance of indigenous knowledge in scientific discovery in the Indian subcontinent and role of communication networks are demonstrated. Hidden stories such as these can be uncovered by close scrutiny of archival sources, in this case predominately the Wallich Correspondence at the Acharya Jagadish Chandra Bose Indian Botanic Garden and the Hardwicke material at the Linnean Society of London, and make a significant contribution to the decolonization of collections held in the West.;Thomas Hardwicke’s use of a Nepali vernacular name “Wah” for
+
+Ailurus fulgens
+
+(red panda, also known as the lesser panda or red bear-cat) in his 1821 report to the Linnean Society of London, and its eventual publication in 1827, has enabled a connection to be made between a mysterious “stuffed otter” found in a Kathmandu bazaar in 1818 and an illustration from Hardwicke’s natural history collection held at the Linnean Society of London. The “stuffed otter” was referred to in letters from Edward Gardner of the British Residency in Kathmandu to Nathaniel Wallich in the Calcutta Botanic Garden. These reveal the seminal role played by Bharat Singh in the realization that this animal was unusual and in his procuring further specimens and ecological information about it from traders in Nepal. Singh was one of Wallich’s plant collectors stationed in Kathmandu and was probably also the source of red panda specimens sent to Paris by Alfred Duvaucel. Duvuacel’s specimens were used by Frédéric Cuvier as the basis of the first scientific description of the species in 1825, which predated that of Hardwicke by two years. The importance of indigenous knowledge in scientific discovery in the Indian subcontinent and role of communication networks are demonstrated. Hidden stories such as these can be uncovered by close scrutiny of archival sources, in this case predominately the Wallich Correspondence at the Acharya Jagadish Chandra Bose Indian Botanic Garden and the Hardwicke material at the Linnean Society of London, and make a significant contribution to the decolonization of collections held in the West.;
+DA  - 2023///
+PY  - 2023
+DO  - 10.3366/anh.2023.0830
+VL  - 50
+IS  - 1
+SP  - 85
+EP  - 100
+LA  - English
+SN  - 0260-9541
+UR  - https://ncsu.summon.serialssolutions.com/2.0.0/link/0/eLvHCXMwpV3NbtQwELYoXLhURVBRKJJPXJZsvXHiJJU4QGnVGwfac2THtlhpm1bs5sBtHwOk9uX2STrjnzS7LYiKS7SyIq8882VmPJ75TAhPxyzZsAnIuqUzvNVqUggltWKNUpU2sqw0eDCzkdv5FVtjHixqP_hvTcMY6Bo7Zx-h7X5SGIDfoHN4gtbh-U96j9ULR5-Rinkx-ga-6XscrOZYOGgtRJlfsY0njn_BxAA26GJBp-sEBJdcuih1Out-dPOR7Wbwl07pGKqeTi_kTP6U2AyjR1cybuwf4LN11KHYcekISQYZ_EVo9sJ2oVBgHNIPKR9UrbicGHhYdx50r7NxYMhgz5RUuSe4GhtvaIs8T3AzNbTEnoJ2DXHerPpbfYKDnjhq03u2n3PhSY_xiCnlYwAbu3Ny8WB_w_f1FYl_mgAJ2C_0tFl8NG3SzbfIVlH1NUSCFf4wPC7Qk7jiRAdr06wFPdsmyqxztc6DeOZsh2yHjQj95BH0gjwx7UvSrJbXHjfU4Wa1_D2nATHUIWa1vDmkPVLotKWIFHppaUAKDUj5QAEntMcJBZxQh5NX5Pzk-OzoNAnXcCRNKvgikamFjza3KpfWlhqWLBoYsdwWTcVKVcCHDFY-45liUhoIiJXOMqWEbjh4hJTtkqftZWteEyplrkslRGYZz6y1shSYnZnYQjGjtNoj76Oc6ivPtlLDLhUFWoNAaxRojQLdI8mGFP_-_ptHvv-WPL8D-z55ZsE6mHewDjBBt5bxhno
+KW  - Historical Studies
+ER  - 
+
+TY  - MGZN
+TI  - Predicting the distribution of a rare chipmunk
+AU  - Perkins-Taylor, Ian E.
+AU  - Frey, Jennifer K.
+T2  - Journal of mammalogy
+AB  - Abstract Species distribution models (SDMs) use presence records to determine the relationship between species occurrence and various environmental variables to create predictive maps describing the species’ distribution. The Oscura Mountains Colorado chipmunk (Neotamias quadrivittatus oscuraensis) occurs in central New Mexico and is of conservation concern due to its relict distribution and threats to habitat. We previously created an occupancy model for this taxon, but were concerned that the model may not have adequately captured the ecological factors influencing the chipmunk’s distribution because of the data hungry nature of occupancy modeling. MaxEnt is another SDM method that is particularly effective at testing large numbers of variables and handling small sample sizes. Our goal was to create a MaxEnt model for the Oscura Mountains Colorado chipmunk and to compare it with our previous occupancy model for this taxon, either to strengthen our original assessment of the relevant ecological factors or identify additional factors that were not captured by our occupancy model. We created MaxEnt models using occurrence records from baited camera traps and opportunistic surveys. We adjusted model complexity using a novel method for tuning both the regularization multiplier and feature class parameters while also performing variable selection. We compared the distribution maps and variables selected by MaxEnt to the results of our occupancy model for this taxon. The MaxEnt and occupancy models selected similar environmental variables and the overall spatial pattern of occurrence was similar for each model. Likelihood of occurrence was positively related to elevation, piñon woodland vegetation type, and topographic variables associated with escarpments. The overall similarities between the MaxEnt and occupancy models increased our confidence of the ecological factors influencing the distribution of the chipmunk. We conclude that MaxEnt offers advantages for predicting the distribution of rare species, which can help inform conservation actions.
+DA  - 2019///
+PY  - 2019
+VL  - 101
+IS  - 4
+LA  - English
+SN  - 0022-2372
+UR  - https://ncsu.summon.serialssolutions.com/2.0.0/link/0/eLvHCXMwpV1bS8MwFA5uoOxF5g3v5A90rk2bLA97kOFQ9GHCnnwZaZPikHajW_-_J02ydqKg8yWUQJpwvvac5Mu5IESCXt_7ohNg1x33A8lTP_RV6IsEzB6XAU2U5ANeJetvcjtdFxrzrVP73b-Rhj7AWkfO_gHtzUuhA54Bc2gBdWh_hfuk0FcvaxcFJXViXFvTysRCFpWv1_t8mZX5xw9700xkmWjy7ROlOfWVVx_wn0AxbKIYxoVhvp2vjCVPLZugA5jgEBk2NSQcTgNiyun0lFWKYeRBs601LQcxrzmBhnSXWSVeAgaShKYWy3au69HL-PV5u9sYVTdCZz7PtLyGKvfKVQu1iG9dNmsXHmbTbto1d9CBGw-mVZcfE2A3GvuFaRcdWmHie4PQEdpT-THaf1tU1xgnqFfjhAEn3MQJL1IssMYJO5xO0XD8MB09em662dKkCZlpGcxYpEDrpQllMeWCSppQJZkOaO4PZMBScoba-SJX5wjTSFLKFNgb2OQSnvJIiYAxIWJFw5inF4juNsflrgOvUKf-Rq5Re12U6gbWC__hbYXEJ2AMNwA
+ER  - 
+
+TY  - CHAP
+TI  - Tufted Titmouse and Black-crested Titmouse: Baeolophus bicolor and Baeolophus atricristatus
+AU  - LOCKWOOD, MARK W.
+T2  - Basic Texas Birds
+AB  - BACKGROUND These noisy birds are a common sight in woodland habitats in most of the state. They are usually seen in pairs, or in family groups during the summer and early fall. Although they can be hard to find at times during the spring and summer as they forage silently, more often they announce their presence by their harsh calls. During the winter, titmice are a frequent component of foraging flocks and are often the first to announce the presence of a potential predator. Titmice are early nesters, often having fledglings out of the nest at the height of migration
+DA  - 2014///
+PY  - 2014
+IS  - Book, Section
+SP  - 254
+LA  - English
+PB  - University of Texas Press
+SN  - 9780292713499;0292713495;
+UR  - https://ncsu.summon.serialssolutions.com/2.0.0/link/0/eLvHCXMwpV1LS8QwEB5cRRAvPvFNL14s3W26bbc9eNBVEVYpSGHBS4ltAnuwC3YX_PlOMvaJD8RLKUlIh_nSdGYy8xVg6PRtq7MnuKnHMs_1uUgDxociCBB6iZ876fnc1gxDjdgOcSIU3yW1D_6NNLYh1qpy9g9oV5NiA94j5nhF1PHaMYjboVc6luWodDMW77wwr2dvWWUwP149Tcxp33yIxpNpFN20VspSKrMzni1UGICOE3Rcz0r1jzvqrmaIgGkiQiqSbNDNlikeJEMzwYN8SdsJHU1WGDb3M2J47u6zI7STUBE0vM-odLnDW_3lMMVn_prN0sWlyK1l0YNeyXZfcrGzwFfOcymM90mSVAlHFLNq5kE9bzuZVJsG8RZsqnIRQ9VxoFzbsCLyHVh_nuvjil24IO0apQoN1K7R0m7VtQfnd7fx-N7SD0kUvEWC3pOSIiEpEpTC3ofVfJ6LAzDQbhqGgfR45kvXRxcX3Txc9A6TI85k-nIIZz_PdfTbgGPYqKE-gTWJ61ecogD4knwAQlYLXA
+ER  - 
+
+TY  - BOOK
+TI  - Why cats paint : a theory of feline aesthetics
+AU  - Busch, Heather
+AU  - Silver, Burton
+AU  - Animal Rights Network Collection (North Carolina State University)
+CN  - SF446.5 .B87
+CY  - Berkeley, Calif.
+DA  - 1994///
+PY  - 1994
+LA  - English
+PB  - Ten Speed Press
+SN  - 0-89815-612-2
+UR  - https://catalog.lib.ncsu.edu/catalog/NCSU2222182
+AN  - D. H. Hill Jr. Library
+KW  - Animals as artists
+KW  - Cats -- Behavior
+ER  - 
+
+TY  - THES
+TI  - Parakeet Logic
+AU  - Karty, Lindsay
+AB  - This paper is an analysis of how an amalgamation of concepts, processes, emotions, and my art practice during the past two years led to creating my thesis project, Parakeet Logic. A multi-channel sound and video collage, Parakeet Logic is an allegorical representation of an absurd attempt for self-understanding in a conspicuously excessive and connected society. The result is a bricolage created from a “library” of objects, texts, sounds, videos, conversations, experiments, and observations. Parakeet Logic is a spiraling multi-channel sound and video collage, combining trash aesthetics, podcast logic, and amateur video. Drawing from location-based DIY counterculture, Parakeet Logic is a satirical journey through our technological fetishes, our search for authentic relationships, and the tangles between. Parakeet Logic is formed by collected language filtered and activated through Craigslist collaborations, handheld video experiments, and a significant repository of things collected over the past two years. These materials are amassed, reduced, and spewed into a study of weird harmonies where some things seem significant, but are actually equalized.
+DA  - 2015///
+PY  - 2015
+LA  - English
+PB  - ProQuest Dissertations Publishing
+UR  - https://ncsu.summon.serialssolutions.com/2.0.0/link/0/eLvHCXMwY2AwNtIz0EUrEywMTZJNzNNMjdMsTZPNk1OSjNNMU9KSjZONE1PNDVJNUMd2IONvoK0x0OiGlZLgojslPxk0aq4PqnqB9Z2phQFonSX4ZoUUW0MjcyNTZgZWQ6AseO8vcmsI3nkHdsyAzSJgYoSewQPnm2MUyeB6xk2AIQvmJPDyEtClBsjr7PXBZxuCD7SAneNIvvMFGXhckCbjhRiYUvNEGPgCEosSs1NTSxRAtzAnizIou7mGOHvowgyPhya-4niEycZiDCx5-XmpEgwKwIZWagqw6kkys0wxSTUySQIGBrCxmGJqZmmWlmKUIskgg88kKfzS0gxcwJaEKWRsQoaBpaSoNFUWaDcweOTAkQAAxT6XLw
+KW  - Cinematography
+KW  - Fine arts
+ER  - 
+
+TY  - CONF
+TI  - Preliminary study: paired clownfish (Amphiprion sp.) spawning pattern in indoor rearing system
+AU  - Sahusilawane, HA
+AU  - Junior, MZ
+AU  - Suprayudi, MA
+AU  - Soelistyowati, DT
+AU  - Tumbelaka, LITA
+AU  - Effendi, I
+T2  - 4TH EMBRIO INTERNATIONAL SYMPOSIUM AND THE 7TH INTERNATIONAL SYMPOSIUM OF EAST ASIA FISHERIES AND TECHNOLOGISTS ASSOCIATION
+A2  - Nugraha, R
+DA  - 2019///
+PY  - 2019
+DO  - 10.1088/1755-1315/404/1/012034
+VL  - 404
+SN  - 1755-1307
+AN  - WOS:000530085200034
+ER  - 
