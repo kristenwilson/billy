@@ -13,12 +13,12 @@ import datetime
 import logging
 
 from rispy_mapping import map_rispy
-from transaction_templates import map_citation_type, get_transaction_templates_csv, get_transaction_templates_ris
+from transaction_templates import map_citation_type
 
 from config import api_key, api_base, pickup_locations
-
-class BillyError(Exception):
-    pass
+from file_utils import validate_file, read_csv
+from api import check_user, submit_transaction
+from transaction import create_transaction, validate_transaction
 
 # Configure logging to output to a file
 logging.basicConfig(
@@ -47,165 +47,6 @@ def get_args():
     logging.info(f'Arguments: email={args.email}, filename={args.filename}, pickup={args.pickup}, test_mode={args.test}')
     return args.email, args.filename, args.pickup, args.test
 
-def validate_file(filename, messages):
-
-    # Construct the filepath of the user's file.
-    data_files_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data_files'))
-    filepath = os.path.join(data_files_dir, filename)
-
-    # If the file doesn't exist, raise an error.
-    if not os.path.isfile(filepath):
-        error_message = ('Error: The file ' + filepath + ' does not exist.\n')
-        raise BillyError(error_message)
-
-    # Verify that the file is either a RIS or CSV file.
-    filetype = None    
-    with open(filepath, 'r', encoding='utf-8') as file:
-        first_line = file.readline().strip()
-        
-        # Skip blank lines at the beginning of the file.
-        while not first_line:
-            first_line = file.readline().strip()
-            if not first_line:
-                # Check if the file is empty
-                if file.tell() == 0:
-                    error_message = 'Error: The file is empty.'
-                    raise BillyError(error_message)
-        
-        # If the first line of the file is a RIS 'type' tag, the file is treated as an RIS file.
-        if first_line.__contains__('TY  -'):
-            filetype = 'ris'
-            messages.append('RIS file confirmed.')
-        
-        # If there is a comma in the first line, the file is treated as a CSV file.
-        elif ',' in first_line:        
-            try:
-                with open(filepath, 'r', encoding='utf-8') as csvfile:
-                    reader = csv.DictReader(csvfile)
-                    
-                    # Check that the file contains an 'Item Type' column and if not, exit the script.
-                    if 'Item Type' not in reader.fieldnames:
-                        error_message = 'Error: The file must contain a column called "Item Type".\n'
-                        raise BillyError(error_message)
-                    
-                    else:
-                        filetype = 'csv'
-                        messages.append('\nCSV file confirmed.')
-            
-            # If the file is not a valid CSV file, exit the script.
-            except csv.Error:
-                error_message = ('Error: The file ' + filepath + ' is not a valid CSV file.\n')
-                raise BillyError(error_message)
-            
-        # If the file is not a valid RIS or CSV file, exit the script.
-        else:
-            error_message = 'Error: The file ' + filename + ' is not a valid file type. The file must be a CSV or RIS file.\n'
-            raise BillyError(error_message)
-
-        return filepath, filetype, messages
-    
-def check_user(email, api_base, api_key, messages):
-
-    # Define the API URL and headers.
-    api_url = api_base + '/Users/ExternalUserID/' + email
-    headers = {'ContentType': 'application/json', 'ApiKey': api_key}
-
-    try:
-        # Make the API request.
-        response = requests.get(api_url, headers=headers)
-        
-        if response.status_code == 200:
-            # If the user has a "Cleared" status of "Yes", the user is valid.
-            if response.json()['Cleared'] == 'Yes':
-                messages.append('\nUser ' + email + ' confirmed.\n')
-                return messages
-            # If the user has a "Cleared" status of "No", the user is not valid.
-            elif response.json()['Cleared'] == 'No': 
-                error_message = '\nUser ' + email + ' is not cleared to place requests.\n'
-                raise BillyError(error_message)
-        
-        # Raise an error if the API key is not valid.
-        elif response.status_code == 401:
-            error_message = 'Error: Invalid API key. Please check the API credentials in config.py.\n'
-            raise BillyError(error_message)
-        
-        # Print any other errors.
-        else:
-            error_message = ' Error: ' + response.json()['Message'] + '\n'
-            raise BillyError(error_message)
-        
-    except Exception as e:
-        raise BillyError(e)
-
-def create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry):
-    
-    # Returns a dictionary of transaction templates prepopulated with values from the user arguments.
-    # Also returns the title and author for use in the results file.
-    if filetype == 'csv':
-        transaction_templates = get_transaction_templates_csv(email, pickup, entry, illiad_request_type, illiad_doc_type)
-        title = entry.get('Title', '')
-        author = entry.get('Author', '')
-    elif filetype == 'ris':
-        transaction_templates = get_transaction_templates_ris(email, pickup, entry, illiad_request_type, illiad_doc_type)
-        title = entry.get('primary_title', '')
-        author = entry.get('authors', '')
-
-    # Check if the transaction type is in the transaction_templates dictionary.
-    if transaction_type in transaction_templates:
-
-        # If the Type column contains a valid value, return a transaction using the appropriate template.
-        # If the file contains a value for a field, use that value. If not, it will be set to ''.
-        transaction = {k: entry.get(v, v) for k, v in transaction_templates[transaction_type].items()}
-        return transaction, None, title, author
-
-    # If the Type column contains an invalid value, return an error message and move to the next entry.
-    else:
-        error_message = f'The Type field contains an unsupported citation type.'
-        return None, error_message, title, author
-
-def validate_transaction(transaction):
-            
-    # Check that the transaction contains all required fields.
-    required_fields = ['ExternalUserId', 'RequestType', 'ProcessType']
-    if transaction['RequestType'] == 'Loan':
-        required_fields.append('ItemInfo4')
-
-    missing_fields = [field for field in required_fields if field not in transaction or not transaction[field]]
-    
-    # Replaces 'ItemInfo4' with 'Pickup Location' in the error message for user clarity.
-    if 'ItemInfo4' in missing_fields:
-        missing_fields.remove('ItemInfo4')
-        missing_fields.append('Pickup Location')
-    
-    # Return an error if the transaction is missing any required fields.
-    if missing_fields:
-        error_message = f'The following required fields are missing from the transaction: {", ".join(missing_fields)}.'
-        return error_message
-
-def submit_transaction(transaction, api_base, api_key, i):
-    
-    # Define the API URL and headers.
-    try:
-        api_url = api_base + '/Transaction/'
-        headers = {'ContentType': 'application/json', 'ApiKey': api_key}
-
-        # Make the API request.
-        response = requests.post(api_url, headers=headers, json=transaction)
-        
-        # If the request is successful, return the transaction number.
-        if response.status_code == 200:
-            error = 'No errors'
-            return response.json()['TransactionNumber'], error
-
-        # If the request is not successful, return an error message.
-        else:
-            error = (f'Error on line {i}: ' + str(response.status_code) + ': ' + response.json()['Message'] + '\n')
-            return None, error
-    
-    # Print any errors related to the API request.
-    except Exception as e:
-        error = (f'Error on line {i}: ' + str(e) + '\n')
-        return None, error
 
 def process_transaction(filetype, email, filename, filepath, pickup, test_mode, messages):
     # Display a message if the program is running in test mode.
@@ -249,10 +90,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
         if filetype == 'ris':
             citations = map_rispy(filepath)
         elif filetype == 'csv':
-            with open(filepath, 'r', encoding='utf-8') as source_file:
-                citations = csv.DictReader(source_file)
-                citations = list(citations)
-
+            citations = list(read_csv(filepath))
         # Process a transaction for each entry.
         for i, entry in enumerate(citations, start=1):
         
