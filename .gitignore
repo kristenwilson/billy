@@ -169,5 +169,5 @@ data_files/Jstorquery.ris
 results
 
 # Ignore test output files
-tests/data/actual/*
-!tests/data/actual/.gitkeep
+test/data/actual/*
+!test/data/actual/.gitkeep
