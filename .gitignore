@@ -167,3 +167,7 @@ data_files/Jstorquery.ris
 .DS_Store
 .DS_Store
 results
+
+# Ignore test output files
+test/data/actual/*
+!test/data/actual/.gitkeep
