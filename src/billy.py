@@ -8,7 +8,6 @@ import argparse
 import os
 import sys
 import csv
-import requests
 import datetime
 import logging
 
