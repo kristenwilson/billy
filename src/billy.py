@@ -20,6 +20,7 @@ from file_utils import validate_file, read_csv
 from api import check_user, submit_transaction
 from transaction import create_transaction, validate_transaction
 from exceptions import BillyError
+from config import api_key, api_base, pickup_locations, RESULTS_DIR, TEST_RESULTS_DIR
 
 # Configure logging to output to a file
 logging.basicConfig(
@@ -53,19 +54,26 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
     # Display a message if the program is running in test mode.
     if test_mode:
         messages.append('Running in test mode. Transactions will be included in the results file but not submitted.\n')
-    
-    # Get the current date and time to the nearest second for use in filename
-    # now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 
-    # Ensure the "test/data/actual" folder exists
-    results_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'test', 'data', 'actual'))
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+
+    # Ensure the "test/data/actual" and "data_files/results" folders exists
+    if not os.path.exists(RESULTS_DIR):
+        os.makedirs(RESULTS_DIR)
+    if not os.path.exists(TEST_RESULTS_DIR):
+        os.makedirs(TEST_RESULTS_DIR)
     
     # Construct the filepath for the results file
     base_filename = os.path.splitext(filename)[0]
-    results_filename = f'{base_filename}_actual.csv'
-    results_filepath = os.path.join(results_dir, results_filename)
+    if test_mode:
+        results_filename = f'{base_filename}_actual.csv'
+        results_filepath = os.path.join(TEST_RESULTS_DIR, results_filename)
+    else:
+        # Get the current date and time to the nearest second for use in filename
+        now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        results_filename = f'{base_filename}_{now}_results.csv'
+        results_filepath = os.path.join(RESULTS_DIR, results_filename)
+        
+    
     messages.append(f'Results saved to {results_filepath}\n')
 
     # Create a new file for the results.
