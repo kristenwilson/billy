@@ -13,8 +13,6 @@ import logging
 
 from rispy_mapping import map_rispy
 from transaction_templates import map_citation_type
-
-from config import api_key, api_base, pickup_locations
 from file_utils import validate_file, read_csv
 from api import check_user, submit_transaction
 from transaction import create_transaction, validate_transaction
@@ -63,14 +61,15 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
     
     # Construct the filepath for the results file
     base_filename = os.path.splitext(filename)[0]
-    if test_mode:
-        results_filename = f'{base_filename}_actual.csv'
-        results_filepath = os.path.join(TEST_RESULTS_DIR, results_filename)
-    else:
-        # Get the current date and time to the nearest second for use in filename
-        now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
-        results_filename = f'{base_filename}_{now}_results.csv'
-        results_filepath = os.path.join(RESULTS_DIR, results_filename)
+    # if test_mode:
+        # results_filename = f'{base_filename}_actual.csv'
+        # results_filepath = os.path.join(TEST_RESULTS_DIR, results_filename)
+    # else:
+    
+    # Get the current date and time to the nearest second for use in filename
+    now = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+    results_filename = f'{base_filename}_{now}_results.csv'
+    results_filepath = os.path.join(RESULTS_DIR, results_filename)
         
     
     messages.append(f'Results saved to {results_filepath}\n')

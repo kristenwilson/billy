@@ -165,8 +165,8 @@ data_files/edpsychtest.csv
 data_files/Jstorquery.ris
 .DS_Store
 .DS_Store
-results/*
-!results/.gitkeep
+data_files/results/*
+!data_files/results/.gitkeep
 
 # Ignore test output files
 test/data/actual/*
