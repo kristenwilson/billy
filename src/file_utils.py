@@ -1,6 +1,7 @@
 import os
 import csv
 from exceptions import BillyError
+from config import DATA_FILES_DIR
 
 def validate_file(filename: str, messages: list) -> tuple:
     """
@@ -9,8 +10,7 @@ def validate_file(filename: str, messages: list) -> tuple:
     Raises BillyError on failure.
     """
     # Construct the filepath of the user's file.
-    data_files_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data_files'))
-    filepath = os.path.join(data_files_dir, filename)
+    filepath = os.path.join(DATA_FILES_DIR, filename)
 
     # If the file doesn't exist, raise an error.
     if not os.path.isfile(filepath):
