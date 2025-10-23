@@ -47,9 +47,9 @@ def get_args():
 
 
 def process_transaction(filetype, email, filename, filepath, pickup, test_mode, dev_mode, messages):
+    testing = test_mode or dev_mode
     # Display a message if the program is running in test mode.
     if dev_mode:
-        test_mode = True
         messages.append('Running in developer test mode (console logging). Transactions will not be submitted.\n')
     elif test_mode:
             messages.append('Running in test mode. Transactions will be included in the results file but not submitted.\n')
@@ -133,14 +133,14 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
                 result['Error'] = 'No errors'
 
                 # If in test mode, only append the transaction results to the results file.
-                if test_mode:
+                if testing:
                     result['Transaction number'] = 'n/a'
                     writer.writerow(result)
                     messages.append(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
                     logger.info(f"Transaction submitted: {result['Transaction number']}")
 
                 # If not in test mode, submit the transaction and append the transaction results to the results file.
-                if not test_mode:        
+                if not testing:        
                     result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                     writer.writerow(result)
                     messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')
