@@ -16,7 +16,7 @@ from transaction_templates import map_citation_type
 from file_utils import validate_file, read_csv
 from api import check_user, submit_transaction
 from transaction import create_transaction, validate_transaction
-from exceptions import BillyError
+from exceptions import BillyError, TransactionSubmissionError, APIError, APIAuthenticationError, UserNotFoundError,UserNotClearedError,BillyFileNotFoundError, InvalidFileError, EmptyFileError, ValidationError,ConfigError
 from config import api_key, api_base, pickup_locations, RESULTS_DIR, TEST_RESULTS_DIR
 from logging_utils import setup_logging
 
@@ -50,9 +50,9 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
     testing = test_mode or dev_mode
     # Display a message if the program is running in test mode.
     if dev_mode:
-        messages.append('Running in developer test mode (console logging). Transactions will not be submitted.\n')
+        messages.append('Running in developer test mode (console logging). Transactions will not be submitted.')
     elif test_mode:
-            messages.append('Running in test mode. Transactions will be included in the results file but not submitted.\n')
+            messages.append('Running in test mode. Transactions will be included in the results file but not submitted.')
 
     # Ensure the "test/data/actual" and "data_files/results" folders exists
     if dev_mode:
@@ -73,7 +73,7 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
         results_filename = f'{base_filename}_{now}_results.csv'
     results_filepath = os.path.join(results_root, results_filename)
 
-    messages.append(f'Results saved to {results_filepath}\n')
+    messages.append(f'Results saved to {results_filepath}')
 
     # Create a new file for the results.
     with open(results_filepath, 'w', encoding='utf-8', newline='') as resultsfile:
@@ -114,7 +114,8 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
             # Create the transaction based on the transaction type.
             result['Transaction'], result['Error'], result['Title'], result['Author'] = create_transaction(filetype, transaction_type, illiad_request_type, illiad_doc_type, email, pickup, entry)
 
-            logger.info(f"Transaction: {result['Transaction']}")
+            logger.info("Transaction: %s", result['Transaction'])
+            logger.debug("Transaction full: %s", result['Transaction'])
 
             # Validate the transaction.
             if not result['Error']:
@@ -123,9 +124,9 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
             # If there are any errors, write them to the results file.
             # Transaction will not be submitted if there are errors.
             if result['Error']:
-                logger.info(f"Errors: {result['Error']}")
+                logger.info("Errors: %s", result['Error'])
                 writer.writerow(result)
-                messages.append(f'Entry {i}: ' + result['Error'] + '\n')
+                messages.append(f'Entry {i}: ' + result['Error'])
                 continue
             
             # If no errors at the end of the process, set the error message to 'No errors'.
@@ -136,14 +137,26 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
                 if testing:
                     result['Transaction number'] = 'n/a'
                     writer.writerow(result)
-                    messages.append(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']) + '\n')
+                    messages.append(f'Entry {i}: Created the following transaction data: ' + str(result['Transaction']))
                     logger.info(f"Transaction submitted: {result['Transaction number']}")
 
                 # If not in test mode, submit the transaction and append the transaction results to the results file.
                 if not testing:        
                     result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                     writer.writerow(result)
-                    messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}' + '\n')
+                    messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}')
+
+                    try:
+                        result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
+                    except TransactionSubmissionError as e:
+                        logger.error("Submission failed for entry %s: %s", i, e)
+                        result['Transaction number'] = None
+                        result['Error'] = str(e)
+                    writer.writerow(result)
+                    if result['Transaction number']:
+                        messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}')
+                    else:
+                        messages.append(f'Entry {i}: {result["Error"]}')        
 
 def main(email=None, filename=None, pickup=None, test_mode=None, dev_mode=None):
     
@@ -171,13 +184,46 @@ def main(email=None, filename=None, pickup=None, test_mode=None, dev_mode=None):
         # Process the file
         process_transaction(filetype, email, filename, filepath, pickup, test_mode, dev_mode, messages)
     
+    # File / validation errors (missing file, bad CSV, validation)
+    except (BillyFileNotFoundError, InvalidFileError, EmptyFileError, ValidationError) as e:
+        messages.append(str(e))
+        logger.error(str(e))
+        for message in messages:
+            print(message)
+        sys.exit(3)
+
+    # API / external system errors (auth, connection, server, submission)
+    except (APIAuthenticationError, APIError, TransactionSubmissionError) as e:
+        messages.append(str(e))
+        # log traceback for diagnosis but show a concise user message
+        logger.exception("API error (see log for details)")
+        for message in messages:
+            print(message)
+        sys.exit(4)
+    
+    # Config issues
+    except ConfigError as e:
+        messages.append(str(e))
+        logger.error(str(e))
+        for message in messages:
+            print(message)
+        sys.exit(6)
+
+    # Generic application-level BillyError (fallback)
     except BillyError as e:
         messages.append(str(e))
         logger.error(str(e))
+        for message in messages:
+            print(message)
+        sys.exit(3)
 
+    # Unexpected errors
     except Exception as e:
         messages.append(f'Unexpected error: {str(e)}')
-        logger.exception(f'Unexpected error: {str(e)}')
+        logger.exception('Unexpected error')
+        for message in messages:
+            print(message)
+        sys.exit(1)
 
     if not dev_mode:
         for message in messages:
@@ -186,7 +232,7 @@ def main(email=None, filename=None, pickup=None, test_mode=None, dev_mode=None):
         logger.info(f"Developer test mode: {len(messages)} messages printed to cmd (not billy.log).")
 
     if any('Error' in (message or '') for message in messages):
-        sys.exit(1)
+        sys.exit(5)
 
 if __name__ == '__main__':
     main()

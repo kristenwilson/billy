@@ -18,11 +18,18 @@ class RedactFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         # redact message and args to avoid secrets leaking via formatting
         try:
-            if record.args:
-    
-                record.args = ()
             if isinstance(record.msg, str):
                 record.msg = self._redact(record.msg)
+            if record.args:
+                try:
+                    if isinstance(record.args, tuple):
+                        record.args = tuple(self._redact(str(a)) if isinstance(a, str) else a for a in record.args)
+                    else:
+                        # sometimes args can be a single value
+                        record.args = self._redact(str(record.args)) if isinstance(record.args, str) else record.args
+                except Exception:
+                    # fallback: remove args only if redaction fails
+                    record.args = ()
         except Exception:
             pass
         return True

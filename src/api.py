@@ -1,5 +1,8 @@
 import requests
-from exceptions import BillyError
+import logging
+from exceptions import APIError, APIAuthenticationError, UserNotFoundError, UserNotClearedError, TransactionSubmissionError
+
+logger = logging.getLogger(__name__)
 
 def check_user(email: str, api_base: str, api_key: str, messages: list) -> list:
     """
@@ -8,31 +11,52 @@ def check_user(email: str, api_base: str, api_key: str, messages: list) -> list:
     """
 
     # Define the API URL and headers.
-    api_url = api_base + '/Users/ExternalUserID/' + email
+    api_url = f"{api_base}/Users/ExternalUserID/{email}"
     headers = {'ContentType': 'application/json', 'ApiKey': api_key}
 
     try:
         # Make the API request.
-        response = requests.get(api_url, headers=headers)
-        if response.status_code == 200:
-            # If the user has a "Cleared" status of "Yes", the user is valid.
-            if response.json()['Cleared'] == 'Yes':
-                messages.append('\nUser ' + email + ' confirmed.\n')
-                return messages
-            # If the user has a "Cleared" status of "No", the user is not valid.
-            elif response.json()['Cleared'] == 'No': 
-                error_message = '\nUser ' + email + ' is not cleared to place requests.\n'
-                raise BillyError(error_message)
-        # Raise an error if the API key is not valid.
-        elif response.status_code == 401:
-            error_message = 'Error: Invalid API key. Please check the API credentials in config.py.\n'
-            raise BillyError(error_message)
-        # Print any other errors.
+        response = requests.get(api_url, headers=headers, timeout=10)
+
+        if response.status_code == 401:
+            logger.error("API authentication failed (401) for %s", api_url)
+            raise APIAuthenticationError("Invalid API key. Check the API credentials in config.py", status_code=401)
+        if response.status_code == 404:
+            logger.error("User not found: %s", email)
+            raise UserNotFoundError(f"User {email} not found.", status_code=404)
+        
+        # Raises HTTPError for 4XX/5XX status codes
+        response.raise_for_status()  
+
+        data = response.json()
+        cleared = data.get('Cleared')
+        # If the user has a "Cleared" status of "Yes", the user is valid.
+        if cleared == 'Yes':
+            messages.append(f'User {email} confirmed.')
+            return messages
+        # If the user has a "Cleared" status of "No", the user is not valid.
+        elif cleared == 'No':
+            logger.error("User %s is not cleared to place requests", email)
+            raise UserNotClearedError(f'User {email} is not cleared to place requests.')
         else:
-            error_message = ' Error: ' + response.json().get('Message', 'Unknown error') + '\n'
-            raise BillyError(error_message)
-    except Exception as e:
-        raise BillyError(e)
+            logger.error("Unexpected user status response for %s: %s", email, data)
+            raise APIError(f'Unexpected user status for {email}', status_code=response.status_code)
+    except requests.exceptions.HTTPError as e:
+        logger.exception("HTTP error checking user %s: %s", email, e)
+        status = getattr(e.response, "status_code", None)
+        raise APIError(f"API error: {e}", status_code=status) from e
+    except requests.exceptions.Timeout as e:
+        logger.exception("Timeout while checking user %s", email)
+        raise APIError("Timeout contacting ILLiad API.") from e
+    except requests.exceptions.ConnectionError as e:
+        logger.exception("Connection error while checking user %s", email)
+        raise APIError("Could not connect to ILLiad API.") from e
+    except requests.exceptions.RequestException as e:
+        logger.exception("API request failed while checking user %s", email)
+        raise APIError("ILLiad API request failed.") from e
+    except ValueError as e:
+        logger.exception("Invalid JSON in user check response for %s", email)
+        raise APIError("Invalid response from ILLiad API.") from e
 
 def submit_transaction(transaction: dict, api_base: str, api_key: str, i: int):
     """
@@ -40,23 +64,47 @@ def submit_transaction(transaction: dict, api_base: str, api_key: str, i: int):
     Returns transaction number and error message.
     """
     # Define the API URL and headers.
-    try:
-        api_url = api_base + '/Transaction/'
-        headers = {'ContentType': 'application/json', 'ApiKey': api_key}
-        
+    api_url = api_base + '/Transaction/'
+    headers = {'ContentType': 'application/json', 'ApiKey': api_key}
+    try: 
         # Make the API request.
-        response = requests.post(api_url, headers=headers, json=transaction)
+        response = requests.post(api_url, headers=headers, json=transaction, timeout=15)
         
-        # If the request is successful, return the transaction number.
-        if response.status_code == 200:
-            error = 'No errors'
-            return response.json()['TransactionNumber'], error
+        if response.status_code == 401:
+            logger.error("API authentication failed on submit (401)")
+            raise APIAuthenticationError("Invalid API key on submit.", status_code=401)
         
-        # If the request is not successful, return an error message.
-        else:
-            error = (f'Error on line {i}: {response.status_code}: {response.json().get("Message", "Unknown error")}\n')
-            return None, error
+        if 400 <= response.status_code < 500:
+            message = None
+            try:
+                message = response.json().get("Message")
+            except Exception:
+                message = response.text or "Unknown client error"
+            logger.error("Transaction submission client error line %s status=%s message=%s", i, response.status_code, message)
+            return None, f'Error on line {i}: {response.status_code}: {message}'
+
+        if 500 <= response.status_code < 600:
+            text = response.text or "Server error"
+            logger.error("Transaction submission server error line %s status=%s response=%s", i, response.status_code, text)
+            raise TransactionSubmissionError(f'Fatal server error submitting transaction on line {i}', status_code=response.status_code, response_message=text)
+
+        data = response.json()
+        txn_number = data.get('TransactionNumber')
+        if not txn_number:
+            logger.error("No TransactionNumber returned on line %s: %s", i, data)
+            return None, f'Error on line {i}: no transaction number returned'
+        return txn_number, 'No errors'
+
     # Print any errors related to the API request.
-    except Exception as e:
-        error = (f'Error on line {i}: {str(e)}\n')
-        return None, error
+    except requests.exceptions.Timeout as e:
+        logger.exception("Timeout while submitting transaction on line %s", i)
+        raise TransactionSubmissionError(f'Error on line {i}: request timed out') from e
+    except requests.exceptions.ConnectionError as e:
+        logger.exception("Connection error while submitting transaction on line %s", i)
+        raise TransactionSubmissionError(f'Error on line {i}: connection error') from e
+    except requests.exceptions.RequestException as e:
+        logger.exception("Request failed while submitting transaction on line %s", i)
+        raise TransactionSubmissionError(f'Error on line {i}: request failed: {str(e)}') from e
+    except ValueError as e:
+        logger.exception("Invalid JSON in submit response on line %s", i)
+        raise TransactionSubmissionError(f'Error on line {i}: invalid response') from e
