@@ -32,10 +32,9 @@ def validate_file(filename: str, messages: list) -> tuple:
             while not first_line:
                 first_line = file.readline().strip()
                 # Check if the file is empty
-                if not first_line:
-                    if file.tell() == 0:
-                        logger.error("Empty file: %s", filepath)
-                        raise EmptyFileError(f"The file {filepath} is empty.")
+                if not first_line and file.readline() == '':
+                    logger.error("Empty file: %s", filepath)
+                    raise EmptyFileError(f"The file {filepath} is empty.")
             
             
             # If the first line of the file is a RIS 'type' tag, the file is treated as an RIS file.
@@ -52,7 +51,7 @@ def validate_file(filename: str, messages: list) -> tuple:
                     # Check that the file contains required columns and if not, exit the script.
                     missing = REQUIRED_CSV_COLUMNS - set(reader.fieldnames or [])
                     if missing:
-                        logger.error("Missing %s column in CSV: %s", {', '.join(sorted(missing))}, filepath)
+                        logger.error("Missing %s column in CSV: %s", ', '.join(sorted(missing)), filepath)
                         raise InvalidFileError(f"CSV is missing required columns: {', '.join(sorted(missing))}")
                     
                     filetype = 'csv'
@@ -68,7 +67,7 @@ def validate_file(filename: str, messages: list) -> tuple:
                 raise InvalidFileError(f"The file {filename} is not a valid file type. Must be CSV or RIS.")
     except (OSError, IOError) as e:
         logger.error("I/O error reading file: %s - %s", filepath, str(e))
-        raise BillyFileNotFoundError(f"Error reading file {filepath}: {str(e)}")
+        raise InvalidFileError(f"Error reading file {filepath}: {str(e)}")
     return filepath, filetype, messages
 
 def read_csv(filepath: str):

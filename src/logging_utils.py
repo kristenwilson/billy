@@ -23,7 +23,11 @@ class RedactFilter(logging.Filter):
             if record.args:
                 try:
                     if isinstance(record.args, tuple):
-                        record.args = tuple(self._redact(str(a)) if isinstance(a, str) else a for a in record.args)
+                        record.args = tuple(
+                            self._redact(a) if isinstance(a, str) else 
+                            self._redact(str(a)) if a is not None else a 
+                            for a in record.args
+                        )
                     else:
                         # sometimes args can be a single value
                         record.args = self._redact(str(record.args)) if isinstance(record.args, str) else record.args

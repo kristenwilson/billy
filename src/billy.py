@@ -142,10 +142,6 @@ def process_transaction(filetype, email, filename, filepath, pickup, test_mode, 
 
                 # If not in test mode, submit the transaction and append the transaction results to the results file.
                 if not testing:        
-                    result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
-                    writer.writerow(result)
-                    messages.append(f'Entry {i}: Created transaction number {result["Transaction number"]}')
-
                     try:
                         result['Transaction number'], result['Error'] = submit_transaction(result['Transaction'], api_base, api_key, i)
                     except TransactionSubmissionError as e:
