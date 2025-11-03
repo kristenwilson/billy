@@ -10,12 +10,11 @@ python -m pip install -r requirements.txt
 ### ILLiad API
 To connect to the ILLiad API, ask your ILLiad administrator to create an API key for this project. You will also need the base URL for your ILLiad system. It will look like `https://your.illiad.edu/ILLiadWebPlatform`.
 ### Config
-Use `config.py.template` to create `config.py`. Fill in the values for your ILLiad API base URL and key.
-
+Use `.env.example` to create `.env` in the project’s base directory (billy folder). Fill in the values for your ILLiad API base URL and key.
 
 You can also enter the names of your pickup locations as they appear in ILLIad, for example: 
 
-```pickup_locations = ['Hill', 'Hunt', 'Design', 'Natural Resources', 'Veterinary Medicine', 'Textiles', 'METRC', 'Distance/Extension']```
+```PICKUP_LOCATIONS=Hill,Hunt,Design,Natural Resources,Veterinary Medicine,Textiles,METRC,Distance/Extension```
 
 ## Usage
 ```python
