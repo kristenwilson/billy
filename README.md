@@ -21,6 +21,7 @@ You can also enter the names of your pickup locations as they appear in ILLIad, 
 python billy.py you@university.edu file.csv -p 'Pickup Location'
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
+
 Use `--dev` to run the script in developer mode. This will output a list of transactions and errors without submitting, log only to the console, and give the output file a deterministic filename (for future testing).
 
 ## RIS files
