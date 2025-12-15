@@ -332,6 +332,7 @@ def main(
         logger.error(str(e))
         for message in messages:
             print(message)
+            print('')
         sys.exit(2)
     
     # File/validation errors: missing file, bad format, validation failed
@@ -340,6 +341,7 @@ def main(
         logger.error(str(e))
         for message in messages:
             print(message)
+            print('')
         sys.exit(3)
 
     # API/external system errors: auth failure, connection, server, submission
@@ -349,6 +351,7 @@ def main(
         logger.exception("API error (see log for details)")
         for message in messages:
             print(message)
+            print('')
         sys.exit(4)
     
     # Configuration errors: missing/invalid config values
@@ -357,6 +360,7 @@ def main(
         logger.error(str(e))
         for message in messages:
             print(message)
+            print('')
         sys.exit(6)
 
      # Generic Billy error (fallback for unmapped BillyError subclasses)
@@ -365,6 +369,7 @@ def main(
         logger.error(str(e))
         for message in messages:
             print(message)
+            print('')
         sys.exit(3)
 
     # Unexpected errors
@@ -373,12 +378,14 @@ def main(
         logger.exception('Unexpected error')
         for message in messages:
             print(message)
+            print('')
         sys.exit(1)
 
     # Print collected messages to user
     if not dev_mode:
         for message in messages:
             print(message)
+            print('')
     else:
         logger.info(f"Developer test mode: {len(messages)} messages printed to cmd (not billy.log).")
 
