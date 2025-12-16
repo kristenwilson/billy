@@ -18,7 +18,7 @@ You can also enter the names of your pickup locations as they appear in ILLIad, 
 
 ## Usage
 ```python
-python billy.py you@university.edu file.csv -p 'Pickup Location'
+python billy.py you@university.edu file.csv -p Pickup Location
 ```
 Use `-t` to run the script in test mode. This will output a list of transactions and errors to review before submitting.
 
@@ -35,7 +35,6 @@ The file you use with this script must be a plaintext .csv file. It can include 
 This file format matches the default output from Zotero. If you are using a different citation manager, you may need to do some pre-processing to get your citation data into the correct format.
 
 ### Book request fields
-* Item Type = 'book' *
 * Title *
 * Author *
 * Publication Year*
@@ -43,7 +42,6 @@ This file format matches the default output from Zotero. If you are using a diff
 * ISBN
 
 ### Journal article request fields
-* Item Type='journalArticle' *
 * Title *
 * Publication Title *
 * Author *
@@ -55,7 +53,6 @@ This file format matches the default output from Zotero. If you are using a diff
 * ISSN
 
 ### Book chapter request fields
-* Item Type='bookSection' *
 * Title *
 * Publication Title *
 * Author *
