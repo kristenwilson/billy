@@ -159,11 +159,15 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 .vscode/launch.json
-config.py
 results.csv
 process_ris_test.py
 data_files/edpsychtest.csv
 data_files/Jstorquery.ris
 .DS_Store
 .DS_Store
-results
+data_files/results/*
+!data_files/results/.gitkeep
+
+# Ignore test output files
+test/data/actual/*
+!test/data/actual/.gitkeep
